@@ -1,5 +1,6 @@
 package com.akvamarin.friendsappserver.services;
 import com.akvamarin.friendsappserver.domain.entity.User;
+import com.akvamarin.friendsappserver.exception.NoSuchElementFoundException;
 import com.akvamarin.friendsappserver.repositories.UserRepository;
 import com.akvamarin.friendsappserver.domain.dto.UserDTO;
 import com.akvamarin.friendsappserver.domain.mapper.UserMapper;
@@ -8,7 +9,6 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import javax.validation.ValidationException;
 import javax.validation.constraints.NotNull;
 
@@ -70,6 +70,6 @@ public class UserServiceImpl implements UserService{
     public UserDTO findById(long userID) {
         return userRepository.findById(userID)
                 .map(userMapper::toDTO)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new NoSuchElementFoundException(String.format("User with ID %d not found", userID)));
     }
 }

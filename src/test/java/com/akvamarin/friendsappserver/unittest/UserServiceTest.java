@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -28,7 +29,8 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 class UserServiceTest {
 
-	private  static final long USER_ID = 1L;
+	private static final long USER_ID = 1L;
+	private static final long NOT_FOUND_USER_ID = 100L;
 
 	@Mock
 	UserMapper userMapper;
@@ -100,6 +102,18 @@ class UserServiceTest {
 				.findById(USER_ID);
 	}
 
+	@Test
+	public void whenFindByIdAndNotFoundUser_ThenReturnException() throws Exception {
+		final User user = null;
 
+		doReturn(Optional.ofNullable(user))
+				.when(userRepository)
+				.findById(NOT_FOUND_USER_ID);
+
+		Assertions.assertThrows(EntityNotFoundException.class, () -> {
+			userService.findById(NOT_FOUND_USER_ID);
+		});
+
+	}
 
 }

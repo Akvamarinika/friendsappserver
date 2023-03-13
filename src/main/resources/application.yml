@@ -3,6 +3,8 @@ server:
   port: 9000
   error:
     include-message: always
+    include-binding-errors: always
+    include-exception: false
 
 # Подключение к БД
 spring:
