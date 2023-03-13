@@ -22,7 +22,6 @@ public class AlcoholConverter implements AttributeConverter<Alcohol, Integer> {
     @JsonCreator    //конструктор или фабричный метод, используемый при десериализации (json => object)
     @Override
     public Alcohol convertToEntityAttribute(Integer dbData) {
-        System.out.println(dbData);
         if (dbData == null || dbData == 0 ){
             return Alcohol.NO_ANSWER;
         }

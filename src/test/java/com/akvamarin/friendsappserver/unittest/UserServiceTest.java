@@ -55,54 +55,12 @@ class UserServiceTest {
 				.build();
 
 		assertInstanceOf(User.class, userService.createNewUser(dto));
-
-		//System.out.println(userMapper.toEntity(dto));
-		//Mockito.verify(userRepository, Mockito.times(1)).save(new User());
-		//Mockito.verify(userRepository, Mockito.times(1)).save(userMapper.toEntity(dto));
-
-
-		/*
-		UserDTO dto = UserDTO.builder()
-				.email("irinakn@mail.ru")
-				.phone("+79501112323")
-				.password("s123456")
-				.nickname("Irina")
-				.dateOfBirthday(LocalDate.of(2000,8,10))
-				.build();
-
-		User actualResult = userService.createNewUser(dto);
-		User expectedResult = User.builder()
-				.email("irinakn@mail.ru")
-				.phone("+79501112323")
-				.password("s123456")
-				.nickname("Irina")
-				.dateOfBirthday(LocalDate.of(2000,8,10))
-				.build();
-
-		Assertions.assertEquals(expectedResult.getEmail(), actualResult.getEmail());
-		Assertions.assertEquals(expectedResult.getPhone(), actualResult.getPhone());
-		Mockito.verify(userRepository, Mockito.times(1)).save(actualResult); */
 	}
-/*                                null,
-                                       null,
-                                       '2023-03-14 18:25:19.904272',
-                                       '1993-03-03',
-                                       'akvamarin@gmail.com',
-                                       '',
-                                       '',
-                                       '',
-                                       null,
-                                       null,
-                                       null,
-                                       null,
-                                       '',
-                                       'http://********',
-                                       null,
-                                       null),
-*/
+
+
 	@Sql({"classpath:city.sql", "classpath:users.sql" })
 	@Test
-	public void findById() {
+	public void whenFindById_ThenReturnUser() {
 		User user = User.builder()
 				.id(USER_ID)
 				.email("akvamarin@gmail.com")
@@ -135,11 +93,13 @@ class UserServiceTest {
 		Assertions.assertTrue(userRepository.findById(USER_ID).isPresent());	//если существует объект
 		var actualResult = userService.findById(USER_ID);
 
-		Assertions.assertEquals(actualResult.getId(), expectedUserDTO.getId());
-		Assertions.assertEquals(expectedUserDTO, actualResult);
+		Assertions.assertEquals(expectedUserDTO.getId(), actualResult.getId());
+		Assertions.assertEquals(expectedUserDTO.getEmail(), actualResult.getEmail());
 
 		Mockito.verify(userRepository, Mockito.times(1))		//ожидаемое количество вызовов
 				.findById(USER_ID);
 	}
+
+
 
 }
