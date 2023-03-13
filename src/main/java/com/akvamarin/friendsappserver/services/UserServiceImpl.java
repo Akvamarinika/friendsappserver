@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.ValidationException;
 import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor    //конструктор с 1 параметром для каждого поля
@@ -67,9 +69,19 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @Transactional
+    public List<UserDTO> findAll() {
+        return userRepository.findAll().stream()
+                .map(userMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public UserDTO findById(long userID) {
         return userRepository.findById(userID)
                 .map(userMapper::toDTO)
                 .orElseThrow(() -> new NoSuchElementFoundException(String.format("User with ID %d not found", userID)));
     }
+
+
 }

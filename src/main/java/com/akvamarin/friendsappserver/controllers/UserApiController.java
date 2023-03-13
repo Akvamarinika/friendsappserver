@@ -6,6 +6,7 @@ import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.domain.responseerror.ErrorResponse;
 import com.akvamarin.friendsappserver.domain.responseerror.ValidationErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/users")
@@ -60,6 +62,17 @@ public class UserApiController {
     }
 
     @Operation(
+            summary = "Get all users",
+            responses = @ApiResponse(responseCode = "200",
+                    description = "All users",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserDTO.class))))
+    )
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserDTO> users() {
+        return userService.findAll();
+    }
+
+    @Operation(
             summary = "Find user by ID",
             responses = {
                     @ApiResponse(responseCode = "200", description = "User by ID found", content = @Content(schema = @Schema(implementation = UserDTO.class))),
@@ -70,6 +83,9 @@ public class UserApiController {
     public UserDTO user(@PathVariable Long id) {
         return userService.findById(id);
     }
+
+
+
 
 
     @PostMapping("/clientSendToken")
