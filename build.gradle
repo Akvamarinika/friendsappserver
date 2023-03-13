@@ -1,6 +1,6 @@
 
 plugins {
-	id 'org.springframework.boot' version '2.7.0'
+	id 'org.springframework.boot' version '2.6.7'	//2.7.0
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 }
@@ -25,6 +25,7 @@ dependencies {
 
 	//implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	//implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.security:spring-security-crypto'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
@@ -37,15 +38,39 @@ dependencies {
 	// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
+	//<!-- MapStruct -->
+	// https://mvnrepository.com/artifact/org.mapstruct/mapstruct
+	implementation group: 'org.mapstruct', name: 'mapstruct', version: '1.5.3.Final'
+	annotationProcessor group: 'org.mapstruct', name: 'mapstruct', version: '1.5.3.Final'
+	implementation group: 'org.mapstruct', name: 'mapstruct-processor', version: '1.5.3.Final'
+	annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: '1.5.3.Final'
+	implementation group: 'org.projectlombok', name: 'lombok-mapstruct-binding', version: '0.2.0'
+	annotationProcessor group: 'org.projectlombok', name: 'lombok-mapstruct-binding', version: '0.2.0'
+
+
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
 
-	//testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	//<!-- Unit тестирование -->
+	// https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+	//testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+	//testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+	//testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.2.0'
+
+
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testCompileOnly 'org.projectlombok:lombok:1.18.24'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 	//testImplementation 'org.springframework.security:spring-security-test'
 
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
+
+	// https://mvnrepository.com/artifact/org.modelmapper/modelmapper
+	//implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.1.1'
+
 
 	// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui
 	implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'

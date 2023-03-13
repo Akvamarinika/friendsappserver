@@ -1,6 +1,8 @@
 server:
   address: 192.168.1.33
   port: 9000
+  error:
+    include-message: always
 
 # Подключение к БД
 spring:
@@ -14,7 +16,7 @@ spring:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQL10Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
 
     properties:
       hibernate:
