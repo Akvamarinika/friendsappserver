@@ -9,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.ValidationException;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -47,11 +48,15 @@ public class UserServiceImpl implements UserService{
     //если сущест-ет email / vkId
     @Transactional
     @Override
-    public User createNewUser(@NotNull UserDTO userDTO) {
+    public User createNewUser(@NotNull UserDTO userDTO) throws ValidationException {
         boolean isUserFromDBDuplicateEmail = userRepository.findUserByEmail(userDTO.getEmail()).isPresent();
         boolean isUserFromDBDuplicatePhone = userRepository.findUserByPhone(userDTO.getPhone()).isPresent();
 
-        if (isUserFromDBDuplicateEmail){
+        if (isUserFromDBDuplicateEmail && isUserFromDBDuplicatePhone){
+            throw new ValidationException("Email and Phone number already registered!");
+        }
+
+        if (isUserFromDBDuplicateEmail){    //NonUniqueResultException
             throw new ValidationException("Email already registered!");
         }
 
@@ -68,8 +73,8 @@ public class UserServiceImpl implements UserService{
         return userRepository.save(user); //return User from DB
     }
 
-    @Override
     @Transactional
+    @Override
     public List<UserDTO> findAll() {
         return userRepository.findAll().stream()
                 .map(userMapper::toDTO)
@@ -80,7 +85,7 @@ public class UserServiceImpl implements UserService{
     public UserDTO findById(long userID) {
         return userRepository.findById(userID)
                 .map(userMapper::toDTO)
-                .orElseThrow(() -> new NoSuchElementFoundException(String.format("User with ID %d not found", userID)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("User with ID %d not found", userID)));
     }
 
 

@@ -4,8 +4,15 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
+
+/**
+ * Класс определяет структуру ответа при запросе
+ * на ошибки валидации сущностей
+ * */
 
 @Getter
 @Setter
