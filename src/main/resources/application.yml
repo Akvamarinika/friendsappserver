@@ -9,7 +9,7 @@ server:
 # Подключение к БД
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/db_test_authorization?useSSL=false&useJDBCCompliantTimezoneShift=true&useUnicode=true&useLegacyDatetimeCode=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
+    url: jdbc:postgresql://localhost:5432/db_test_authorization?useSSL=false&useJDBCCompliantTimezoneShift=true&useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
