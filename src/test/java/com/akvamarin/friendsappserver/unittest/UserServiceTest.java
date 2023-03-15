@@ -3,30 +3,20 @@ package com.akvamarin.friendsappserver.unittest;
 import com.akvamarin.friendsappserver.domain.dto.UserDTO;
 import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.domain.mapper.UserMapper;
-import com.akvamarin.friendsappserver.domain.responseerror.ValidationErrorResponse;
 import com.akvamarin.friendsappserver.repositories.UserRepository;
 import com.akvamarin.friendsappserver.services.UserService;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.datasource.init.CompositeDatabasePopulator;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.jdbc.SqlGroup;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityNotFoundException;
 import javax.sql.DataSource;
 import javax.validation.ValidationException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -50,7 +40,7 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
 class UserServiceTest {
 
 	private static final long USER_ID = 1L;
-	private static final long NOT_FOUND_USER_ID = 100L;
+	private static final long NOT_FOUND_USER_ID = 1000L;
 
 	@Mock
 	UserMapper userMapper;
@@ -154,7 +144,7 @@ class UserServiceTest {
 	}
 
 	@Test
-	public void whenFindUserByIdAndNotFoundUser_ThenReturnException() throws Exception {
+	public void whenFindUserByIdAndNotFoundUser_ThenReturnException() {
 		final User user = null;
 
 		doReturn(Optional.ofNullable(user))
@@ -209,6 +199,47 @@ class UserServiceTest {
 		Assertions.assertEquals(expectedUser.getId(), actualResult.getId());
 		Assertions.assertEquals(expectedUser.getNickname(), actualResult.getNickname());
 		Assertions.assertEquals(expectedUser.getAboutMe(), actualResult.getAboutMe());
+	}
+
+	@Test
+	void whenUpdateUserAndUserNotFound_ThenReturnException() {
+		UserDTO dto = UserDTO.builder()
+				.id(NOT_FOUND_USER_ID)
+				.nickname("Akva")
+				.email("akvamarin@gmail.com")
+				.phone("89991210000")
+				.password("$2a$10$ZmJxIt7HaqxXqwpvd7scte0UmLndHSn2DgZVS99Ug0xZRck2rJ6fO")
+				.dateOfBirthday(LocalDate.of(1995,3,3))
+				.urlAvatar("http://********")
+				.build();
+
+		Assertions.assertThrows(EntityNotFoundException.class, () ->
+				userService.updateUser(dto)
+		);
+
+		Mockito.doReturn(new User())
+				.when(userMapper)
+				.toEntity(dto);
+
+		Mockito.verify(userRepository, Mockito.times(0)).save(userMapper.toEntity(dto));
+	}
+
+	/**
+	 * Тестирование метода deleteUser()
+	 * Удаление аккаунта пользователя из БД
+	 * */
+	@Test
+	void whenDeleteUserAndUserNotFound_ThenReturnTrue() {
+		assertTrue(userService.deleteById(USER_ID));
+	}
+
+	@Test
+	void whenDeleteUserAndUserNotFound_ThenReturnException() {
+		Assertions.assertThrows(EntityNotFoundException.class, () ->
+				userService.deleteById(NOT_FOUND_USER_ID)
+		);
+
+		Mockito.verify(userRepository, Mockito.times(0)).deleteById(NOT_FOUND_USER_ID);
 	}
 
 }
