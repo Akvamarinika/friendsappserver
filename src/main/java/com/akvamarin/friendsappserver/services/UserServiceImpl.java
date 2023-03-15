@@ -4,6 +4,7 @@ import com.akvamarin.friendsappserver.exception.NoSuchElementFoundException;
 import com.akvamarin.friendsappserver.repositories.UserRepository;
 import com.akvamarin.friendsappserver.domain.dto.UserDTO;
 import com.akvamarin.friendsappserver.domain.mapper.UserMapper;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -81,12 +82,25 @@ public class UserServiceImpl implements UserService{
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public UserDTO findById(long userID) {
         return userRepository.findById(userID)
                 .map(userMapper::toDTO)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("User with ID %d not found", userID)));
     }
+
+    @Override
+    @Transactional
+    public User updateUser(@NonNull UserDTO userDTO) {
+        return userRepository.findById(userDTO.getId())
+                .map(user -> {
+                    userMapper.updateEntity(userDTO, user);
+                    return userRepository.save(user);   // обновляет, если такой User есть
+                })
+                .orElseThrow(() -> new EntityNotFoundException(String.format("User with ID %d not found", userDTO.getId())));
+    }
+
 
 
 }

@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -68,7 +69,7 @@ public class UserApiController {
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserDTO.class))))
     )
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<UserDTO> users() {
+    public List<UserDTO> getAllUsers() {
         return userService.findAll();
     }
 
@@ -80,8 +81,21 @@ public class UserApiController {
             }
     )
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDTO user(@PathVariable Long id) {
+    public UserDTO getUserByID(@PathVariable Long id) {
         return userService.findById(id);
+    }
+
+    @Operation(
+            summary = "Update existing user",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "User for requested ID is updated", content = @Content(schema = @Schema(implementation = UserDTO.class))),
+                    @ApiResponse(responseCode = "400", description = "Wrong request format", content = @Content(schema = @Schema(implementation = ValidationErrorResponse.class))),
+                    @ApiResponse(responseCode = "404", description = "Requested data not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            }
+    )
+    @PatchMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public void updateUser(@Valid @RequestBody UserDTO dto) {
+        userService.updateUser(dto);
     }
 
 

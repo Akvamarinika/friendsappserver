@@ -180,4 +180,35 @@ class UserServiceTest {
 		Mockito.verify(userRepository, Mockito.times(1)).findAll();
 	}
 
+	/**
+	 * Тестирование метода updateUser()
+	 * Обновление инфы о пользователе
+	 * */
+	@Test
+	void whenUpdateUser_ThenReturnUsers() {
+		UserDTO dto = UserDTO.builder()
+				.id(USER_ID)
+				.nickname("Akva")
+				.aboutMe("Люблю путешествовать")
+				.email("akvamarin@gmail.com")
+				.phone("89991210000")
+				.password("$2a$10$ZmJxIt7HaqxXqwpvd7scte0UmLndHSn2DgZVS99Ug0xZRck2rJ6fO")
+				.dateOfBirthday(LocalDate.of(1995,3,3))
+				.urlAvatar("http://********")
+				.build();
+
+		User expectedUser = User.builder()
+				.id(USER_ID)
+				.nickname("Akva")
+				.aboutMe("Люблю путешествовать")
+				.build();
+
+		var actualResult = userService.updateUser(dto);
+
+		assertNotNull(actualResult);
+		Assertions.assertEquals(expectedUser.getId(), actualResult.getId());
+		Assertions.assertEquals(expectedUser.getNickname(), actualResult.getNickname());
+		Assertions.assertEquals(expectedUser.getAboutMe(), actualResult.getAboutMe());
+	}
+
 }
