@@ -101,6 +101,15 @@ public class UserServiceImpl implements UserService{
                 .orElseThrow(() -> new EntityNotFoundException(String.format("User with ID %d not found", userDTO.getId())));
     }
 
-
+    @Override
+    @Transactional
+    public boolean deleteById(long id) {
+        return userRepository.findById(id)
+                .map(user -> {
+                    userRepository.deleteById(user.getId());
+                    return true;
+                })
+                .orElseThrow(EntityNotFoundException::new);
+    }
 
 }

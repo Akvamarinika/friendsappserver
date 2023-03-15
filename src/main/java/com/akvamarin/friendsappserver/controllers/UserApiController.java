@@ -99,7 +99,15 @@ public class UserApiController {
     }
 
 
-
+    @Operation(
+            summary = "Remove user by ID",
+            responses = @ApiResponse(responseCode = "204", description = "User for requested ID is removed")
+    )
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{id}")
+    public void deleteUser(@PathVariable Long id) {
+        userService.deleteById(id);
+    }
 
 
     @PostMapping("/clientSendToken")
