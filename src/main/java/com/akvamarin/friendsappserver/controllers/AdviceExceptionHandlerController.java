@@ -50,11 +50,25 @@ public class AdviceExceptionHandlerController {
         return new ErrorResponse(exception.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ErrorResponse conflict(IllegalArgumentException exception) {
+        return new ErrorResponse(exception.getMessage());
+    }
+
     @ResponseStatus(HttpStatus.NOT_FOUND) //404, когда сущность в БД не найдена
     @ExceptionHandler(EntityNotFoundException.class)
     public ErrorResponse error(EntityNotFoundException exception) {
         return new ErrorResponse(exception.getMessage());
     }
+
+   /* @ResponseStatus(HttpStatus.NO_CONTENT) //204, когда в БД удалена запись
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ErrorResponse error(EntityNotFoundException exception) {
+        return new ErrorResponse(exception.getMessage());
+    }*/
+
+
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR) //500
     @ExceptionHandler(RuntimeException.class)

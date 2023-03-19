@@ -43,7 +43,7 @@ public class UserApiController {
             }
     )
     @PostMapping(name = "/createUser", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO) {
+    public ResponseEntity<Void> createUser(@Valid @RequestBody UserDTO userDTO) {
 
 
        // if (userDTO.getPassword().isEmpty() || userDTO.getEmail().isEmpty() || userDTO.getNickname().isEmpty()) {

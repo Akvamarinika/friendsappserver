@@ -1,9 +1,10 @@
-package com.akvamarin.friendsappserver.services;
+package com.akvamarin.friendsappserver.services.impl;
 import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.exception.NoSuchElementFoundException;
 import com.akvamarin.friendsappserver.repositories.UserRepository;
 import com.akvamarin.friendsappserver.domain.dto.UserDTO;
 import com.akvamarin.friendsappserver.domain.mapper.UserMapper;
+import com.akvamarin.friendsappserver.services.UserService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor    //конструктор с 1 параметром для каждого поля
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 

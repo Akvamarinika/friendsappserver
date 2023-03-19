@@ -1,15 +1,15 @@
 package com.akvamarin.friendsappserver.domain.entity.location;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-@Data
+@ToString
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -22,12 +22,13 @@ public class FederalDistrict {
 
     private String name;
 
-    @OneToMany(mappedBy = "federalDistrict", fetch = FetchType.LAZY)
-    private List<Region> regions;
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "federalDistrict", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Set<Region> regions;
 
-    private void addRegion(Region region){
+    public void addRegionToFederalDistrict(Region region){
         if (regions == null){
-            regions = new ArrayList<>();
+            regions = new HashSet<>();
         }
 
         regions.add(region);
@@ -35,5 +36,7 @@ public class FederalDistrict {
         region.setFederalDistrict(this);
     }
 
-
+    public FederalDistrict(String name) {
+        this.name = name;
+    }
 }

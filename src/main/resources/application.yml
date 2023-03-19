@@ -13,14 +13,25 @@ spring:
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
+
   jpa:
     show-sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQL10Dialect
     hibernate:
       ddl-auto: create
-
     properties:
       hibernate:
         format_sql: true
 
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB  # Threshold after which files are written to disk
+      max-file-size: 20MB # Max file size
+      max-request-size: 20MB # Max Request Size
+
+
+logging:
+  level:
+   root: INFO

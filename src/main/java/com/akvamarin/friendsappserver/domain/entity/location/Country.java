@@ -1,14 +1,13 @@
 package com.akvamarin.friendsappserver.domain.entity.location;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@ToString(onlyExplicitlyIncluded=true)
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -17,9 +16,26 @@ import java.util.List;
 public class Country {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
+
+    @Column(unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "country")
-    private List<City> city;
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "country", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<City> cities;
+
+    public void addCityToCountry(City city){
+        if (cities == null){
+            cities = new ArrayList<>();
+        }
+
+        cities.add(city);
+
+        city.setCountry(this);
+    }
+
+    public Country(String name) {
+        this.name = name;
+    }
 }

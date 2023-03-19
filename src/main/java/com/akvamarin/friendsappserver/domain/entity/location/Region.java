@@ -1,13 +1,13 @@
 package com.akvamarin.friendsappserver.domain.entity.location;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@ToString(onlyExplicitlyIncluded=true)
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -20,11 +20,27 @@ public class Region {
 
     private String name;
 
-    @ManyToOne(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "federal_district_id")
+    //cascade = {CascadeType.ALL},
+    @ManyToOne//( fetch = FetchType.EAGER)
+    //@MapsId
+    @JoinColumn(name = "federal_district_id", referencedColumnName = "id")
     private FederalDistrict federalDistrict;
 
-    @OneToMany(mappedBy = "region", fetch = FetchType.LAZY)
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "region", fetch = FetchType.LAZY)
+    @ToString.Exclude
     private List<City> cities;
 
+    public void addCityToRegion(City city){
+        if (cities == null){
+            cities = new ArrayList<>();
+        }
+
+        cities.add(city);
+
+        city.setRegion(this);
+    }
+
+    public Region(String name) {
+        this.name = name;
+    }
 }

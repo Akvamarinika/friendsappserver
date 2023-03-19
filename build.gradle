@@ -77,6 +77,10 @@ dependencies {
 
 	//http://server:port/context-path/swagger-ui.html
 	// http://192.168.1.33:9000/swagger-ui/index.html
+
+	//<!-- For upload Excel -->
+	implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.3'
+
 }
 
 tasks.named('test') {
