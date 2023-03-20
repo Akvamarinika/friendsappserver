@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Hidden;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.ValidationException;
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -24,7 +24,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Контроллер, отвечающий за обработку ошибок на нескольких контроллерах.
  *
- * @see UserApiController
+ * @see UserRestController
  *
  *
  * */
@@ -58,7 +58,7 @@ public class AdviceExceptionHandlerController {
 
     @ResponseStatus(HttpStatus.NOT_FOUND) //404, когда сущность в БД не найдена
     @ExceptionHandler(EntityNotFoundException.class)
-    public ErrorResponse error(EntityNotFoundException exception) {
+    public ErrorResponse notFound(EntityNotFoundException exception) {
         return new ErrorResponse(exception.getMessage());
     }
 
@@ -68,7 +68,11 @@ public class AdviceExceptionHandlerController {
         return new ErrorResponse(exception.getMessage());
     }*/
 
-
+    @ResponseStatus(HttpStatus.FORBIDDEN) // 401, ресурс недоступен для данного типа пользователей
+    @ExceptionHandler(AccessDeniedException.class)
+    public ErrorResponse handleAccessDeniedException(AccessDeniedException exception) {
+        return new ErrorResponse(exception.getMessage());
+    }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR) //500
     @ExceptionHandler(RuntimeException.class)
