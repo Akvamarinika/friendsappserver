@@ -16,24 +16,18 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+//@RequestBody в теле запроса отправляет клиент
+
 
 @RestController
 @RequestMapping("api/v1/users")
 @RequiredArgsConstructor
-public class UserApiController {
+public class UserRestController {
 
     private final UserService userService;
-
-  /*  @GetMapping("/getUser")
-    public User getUser(@RequestBody User user) {
-        return userService.getUser(user);
-    }*/
-
 
     @Operation(
             summary = "Create new user",
@@ -45,11 +39,6 @@ public class UserApiController {
     @PostMapping(name = "/createUser", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> createUser(@Valid @RequestBody UserDTO userDTO) {
 
-
-       // if (userDTO.getPassword().isEmpty() || userDTO.getEmail().isEmpty() || userDTO.getNickname().isEmpty()) {
-      //      return new ResponseEntity<>("Пожалуйста, заполните все поля!", HttpStatus.BAD_REQUEST);
-       // }
-
         final User user = userService.createNewUser(userDTO);
         final URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -58,8 +47,6 @@ public class UserApiController {
                 .toUri();
 
         return ResponseEntity.created(uri).build();
-
-        //return userService.createNewUser(userDTO);
     }
 
     @Operation(
@@ -108,11 +95,4 @@ public class UserApiController {
     public void deleteUser(@PathVariable Long id) {
         userService.deleteById(id);
     }
-
-
-    @PostMapping("/clientSendToken")
-    public String sendToken(@RequestBody String token) {
-        //userService.
-        return "1111111111";
-    } //@RequestBody в теле запроса отправляет клиент
 }

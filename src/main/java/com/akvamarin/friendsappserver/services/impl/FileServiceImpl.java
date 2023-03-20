@@ -1,9 +1,6 @@
 package com.akvamarin.friendsappserver.services.impl;
 
 import com.akvamarin.friendsappserver.domain.entity.location.City;
-import com.akvamarin.friendsappserver.domain.entity.location.Country;
-import com.akvamarin.friendsappserver.domain.entity.location.FederalDistrict;
-import com.akvamarin.friendsappserver.domain.entity.location.Region;
 import com.akvamarin.friendsappserver.repositories.CityRepository;
 import com.akvamarin.friendsappserver.repositories.CountryRepository;
 import com.akvamarin.friendsappserver.repositories.FederalDistrictRepository;
@@ -12,6 +9,7 @@ import com.akvamarin.friendsappserver.services.FileService;
 import com.akvamarin.friendsappserver.utils.ExcelHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +27,7 @@ public class FileServiceImpl implements FileService {
     private final RegionRepository regionRepository;
     private final CityRepository cityRepository;
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Transactional
     @Override
     public void saveLocationExcelToDB(MultipartFile file) {

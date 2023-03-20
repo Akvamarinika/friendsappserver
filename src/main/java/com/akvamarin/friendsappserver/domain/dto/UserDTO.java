@@ -4,14 +4,18 @@ import com.akvamarin.friendsappserver.domain.entity.location.City;
 import com.akvamarin.friendsappserver.domain.enums.*;
 
 import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDate;
-@Builder
+import java.util.Set;
+
+@Builder @Jacksonized
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,8 +27,12 @@ public class UserDTO implements Serializable {
     @Pattern(regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$", message = "Invalid mail format")
     private String email;
 
-    @Pattern(regexp = "^\\d{11}$", message = "Invalid phone format")
-    @Size(min = 11, max = 11, message = "Phone number must be 11 characters")
+    @Email
+    @NotBlank(message = "Login cannot be blank")
+    private String username;
+
+    //@Pattern(regexp = "^\\d{11}$", message = "Invalid phone format")
+    //@Size(min = 11, max = 11, message = "Phone number must be 11 characters")
     private String phone;
 
     @NotBlank(message = "Password cannot be blank")
@@ -62,11 +70,7 @@ public class UserDTO implements Serializable {
     //@NotBlank
     private City city;
 
-    //@Enumerated(EnumType.STRING)
-    // private Set<Role> roles;
-
-    //@Enumerated(EnumType.STRING)
-    private Roles role;
+    private Set<String> roles;
 
     private String vkId;
 
