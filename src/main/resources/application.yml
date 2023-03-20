@@ -35,3 +35,12 @@ spring:
 logging:
   level:
    root: INFO
+
+jwt:
+  token:
+    properties:
+      secret-key: friendsappthisismycustomSecretkeyforauthentication
+      token-expire-duration-sec: 2592000 #1 месяц
+      issuer: com.akvamarin
+
+
