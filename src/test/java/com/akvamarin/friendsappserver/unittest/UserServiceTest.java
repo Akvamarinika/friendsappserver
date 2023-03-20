@@ -86,7 +86,7 @@ class UserServiceTest {
 
 		Mockito.doReturn(Optional.of(new User()))
 				.when(userRepository)
-				.findUserByEmail("alex2000@mail.ru");
+				.findByEmail("alex2000@mail.ru");
 
 		assertThrows(ValidationException.class, () -> userService.createNewUser(dto));
 
