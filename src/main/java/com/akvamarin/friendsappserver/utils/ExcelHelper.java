@@ -40,7 +40,8 @@ public class ExcelHelper {
 
                 Iterator<Cell> cellIterator = row.iterator();
                 int cellIndex = 0;
-                City city = new City(new Country("Россия"));
+                Country country = new Country("Россия");
+                City city = new City();
                 Region region = new Region();
 
                 while (cellIterator.hasNext()) {

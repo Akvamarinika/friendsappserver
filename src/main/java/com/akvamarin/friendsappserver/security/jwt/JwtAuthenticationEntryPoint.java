@@ -1,6 +1,6 @@
 package com.akvamarin.friendsappserver.security.jwt;
 
-import com.akvamarin.friendsappserver.domain.responseerror.ErrorDescription;
+import com.akvamarin.friendsappserver.domain.dto.responseerror.ErrorDescription;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

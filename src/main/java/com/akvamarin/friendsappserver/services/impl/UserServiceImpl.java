@@ -17,6 +17,7 @@ import javax.validation.ValidationException;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
+//BCrypt.hashpw(userDTO.getPassword(), BCrypt.gensalt());
 
 @Slf4j
 @Service
@@ -39,7 +40,6 @@ public class UserServiceImpl implements UserService {
 
         User user = userMapper.toEntity(userDTO);
         String hashedPassword = passwordEncoder.encode(userDTO.getPassword());
-        //BCrypt.hashpw(userDTO.getPassword(), BCrypt.gensalt());
         user.setPassword(hashedPassword);
         user.setEnabled(true);
 

@@ -1,6 +1,6 @@
 package com.akvamarin.friendsappserver.controllers;
 
-import com.akvamarin.friendsappserver.domain.responseerror.ValidationErrorResponse;
+import com.akvamarin.friendsappserver.domain.dto.responseerror.ValidationErrorResponse;
 import com.akvamarin.friendsappserver.services.FileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,7 +28,7 @@ public class FileRestController {
             }
     )
     @PostMapping(name = "/upload-cities-data", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> uploadCitiesData(@RequestParam("file")MultipartFile file){
+    public ResponseEntity<Map<String, String>> uploadCitiesData(@RequestParam("file")MultipartFile file){
         fileService.saveLocationExcelToDB(file);
         return ResponseEntity
                 .ok(Map.of("Message" , " Customers data uploaded and saved to database successfully"));

@@ -4,7 +4,7 @@ import com.akvamarin.friendsappserver.domain.dto.AuthServerToken;
 import com.akvamarin.friendsappserver.domain.dto.AuthUserParamDTO;
 import com.akvamarin.friendsappserver.domain.dto.UserDTO;
 import com.akvamarin.friendsappserver.domain.entity.User;
-import com.akvamarin.friendsappserver.domain.responseerror.ValidationErrorResponse;
+import com.akvamarin.friendsappserver.domain.dto.responseerror.ValidationErrorResponse;
 import com.akvamarin.friendsappserver.services.AuthenticationUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

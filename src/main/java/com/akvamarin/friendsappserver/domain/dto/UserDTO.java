@@ -27,7 +27,7 @@ public class UserDTO implements Serializable {
     @Pattern(regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$", message = "Invalid mail format")
     private String email;
 
-    @Email
+   // @Email
     @NotBlank(message = "Login cannot be blank")
     private String username;
 

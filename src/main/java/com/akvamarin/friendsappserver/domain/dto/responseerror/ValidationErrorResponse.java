@@ -1,11 +1,9 @@
-package com.akvamarin.friendsappserver.domain.responseerror;
+package com.akvamarin.friendsappserver.domain.dto.responseerror;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
 

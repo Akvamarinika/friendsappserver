@@ -1,4 +1,4 @@
-package com.akvamarin.friendsappserver.domain.responseerror;
+package com.akvamarin.friendsappserver.domain.dto.responseerror;
 
 import lombok.Data;
 

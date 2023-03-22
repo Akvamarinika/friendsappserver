@@ -38,7 +38,6 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
 })
 @SpringBootTest
 class UserServiceTest {
-
 	private static final long USER_ID = 1L;
 	private static final long NOT_FOUND_USER_ID = 1000L;
 
@@ -51,8 +50,15 @@ class UserServiceTest {
 	@Autowired
 	private UserService userService;
 
-	@Autowired
-	private DataSource dataSource;
+	@Test
+	void whenFindAll_ThenReturnUsers()
+	{
+		Mockito.doReturn(new ArrayList<User>())
+				.when(userRepository)
+				.findAll();
+		assertNotNull(userRepository.findAll());
+		Mockito.verify(userRepository, Mockito.times(1)).findAll();
+	}
 
 	/**
 	 * Тестирование метода createNewUser()
@@ -156,19 +162,7 @@ class UserServiceTest {
 		);
 	}
 
-	/**
-	 * Тестирование метода findAll()
-	 * Получение всех записей из таблицы
-	 * */
-	@Test
-	void whenFindAll_ThenReturnUsers()
-	{
-		Mockito.doReturn(new ArrayList<User>())
-				.when(userRepository)
-				.findAll();
-		assertNotNull(userRepository.findAll());
-		Mockito.verify(userRepository, Mockito.times(1)).findAll();
-	}
+
 
 	/**
 	 * Тестирование метода updateUser()
