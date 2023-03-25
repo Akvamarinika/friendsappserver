@@ -41,17 +41,16 @@ public class EventServiceTest {
      * */
     @Test
     void createNewEvent_validInput_returnCreatedEvent() {
-        // Arrange
         EventDTO eventDTO = new EventDTO();
         Event event = new Event();
         when(eventMapper.toEntity(eventDTO)).thenReturn(event);
         when(eventRepository.save(event)).thenReturn(event);
         when(eventMapper.toDTO(event)).thenReturn(eventDTO);
 
-        // Act
+        // Actual
         EventDTO createdEventDTO = eventService.createNewEvent(eventDTO);
 
-        // Assert
+        // Expected & Actual
         assertEquals(eventDTO, createdEventDTO);
     }
 
