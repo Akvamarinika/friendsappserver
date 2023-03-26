@@ -5,235 +5,324 @@ import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.domain.mapper.UserMapper;
 import com.akvamarin.friendsappserver.repositories.UserRepository;
 import com.akvamarin.friendsappserver.services.UserService;
+import com.akvamarin.friendsappserver.services.impl.UserServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.assertj.core.api.Assertions.*;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlGroup;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.EntityNotFoundException;
-import javax.sql.DataSource;
 import javax.validation.ValidationException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
 /**
  * Юнит тестирование UserService
  * @see UserService
  * */
 
-@SqlGroup({
-		@Sql(executionPhase = BEFORE_TEST_METHOD, scripts = {"classpath:city.sql", "classpath:users.sql" }),
-		@Sql(executionPhase = AFTER_TEST_METHOD, scripts = "classpath:cleanup.sql")
-})
-@SpringBootTest
+@Slf4j
+@ExtendWith(MockitoExtension.class)
 class UserServiceTest {
-	private static final long USER_ID = 1L;
-	private static final long NOT_FOUND_USER_ID = 1000L;
-
-	@Mock
-	UserMapper userMapper;
 
 	@Mock
 	private UserRepository userRepository;
 
-	@Autowired
-	private UserService userService;
+	@Mock
+	private UserMapper userMapper;
 
-	@Test
-	void whenFindAll_ThenReturnUsers()
-	{
-		Mockito.doReturn(new ArrayList<User>())
-				.when(userRepository)
-				.findAll();
-		assertNotNull(userRepository.findAll());
-		Mockito.verify(userRepository, Mockito.times(1)).findAll();
-	}
+	@Mock
+	private PasswordEncoder passwordEncoder;
+
+	@InjectMocks
+	private UserServiceImpl userService;
+
 
 	/**
 	 * Тестирование метода createNewUser()
 	 * Сохранение записи в таблицу
-	 * */
+	 */
 	@Test
-	public void whenCreateNewUser_ThenReturnUserObject() {
-		final UserDTO dto = UserDTO.builder()
-				.email("irinakn@mail.ru")
-				.phone("+79501112323")
-				.password("s123456")
-				.nickname("Irina")
-				.dateOfBirthday(LocalDate.of(2000,8,10))
-				.urlAvatar("http://********")
-				.build();
+	void createNewUser_withNonExistingEmailOrVkId_shouldCreateUser() throws ValidationException {
+		// given
+		UserDTO userDTO = new UserDTO();
+		userDTO.setEmail("user@example.com");
+		userDTO.setVkId(null);
+		userDTO.setPassword("password");
 
-		assertInstanceOf(User.class, userService.createNewUser(dto));
+		User user = new User();
+		user.setEmail(userDTO.getEmail());
+		user.setVkId(userDTO.getVkId());
+		user.setPassword(userDTO.getPassword());
+
+		Mockito.when(userRepository.findByEmailOrVkId(userDTO.getEmail(), userDTO.getVkId()))
+				.thenReturn(Optional.empty());
+
+		Mockito.when(userMapper.toEntity(userDTO))
+				.thenReturn(user);
+
+		Mockito.when(passwordEncoder.encode(userDTO.getPassword()))
+				.thenReturn("hashed_password");
+
+		Mockito.when(userRepository.save(user))
+				.thenReturn(user);
+
+		// when
+		User result = userService.createNewUser(userDTO);
+
+		// then
+		Assertions.assertNotNull(result);
+		Assertions.assertEquals(user.getEmail(), result.getEmail());
+		Assertions.assertEquals(user.getVkId(), result.getVkId());
+		Assertions.assertEquals(user.getPassword(), result.getPassword());
+		Assertions.assertTrue(result.isEnabled());
+
+		Mockito.verify(userRepository, Mockito.times(1)).findByEmailOrVkId(userDTO.getEmail(), userDTO.getVkId());
+		Mockito.verify(userMapper, Mockito.times(1)).toEntity(userDTO);
+		Mockito.verify(passwordEncoder, Mockito.times(1)).encode(userDTO.getPassword());
+		Mockito.verify(userRepository, Mockito.times(1)).save(user);
+	}
+
+	@Test
+	void createNewUser_withExistingVkId_shouldThrowValidationException() {
+		// given
+		UserDTO userDTO = new UserDTO();
+		userDTO.setEmail(null);
+		userDTO.setVkId("12345");
+		userDTO.setPassword("password");
+
+		Mockito.when(userRepository.findByEmailOrVkId(userDTO.getEmail(), userDTO.getVkId()))
+				.thenReturn(Optional.of(new User()));
+
+		// when, then
+		Assertions.assertThrows(ValidationException.class, () -> {
+			userService.createNewUser(userDTO);
+		});
+
+		Mockito.verify(userRepository, Mockito.times(1)).findByEmailOrVkId(userDTO.getEmail(), userDTO.getVkId());
+	}
+
+	@Test
+	void createNewUser_withExistingEmail_shouldThrowValidationException() {
+		// given
+		UserDTO userDTO = new UserDTO();
+		userDTO.setEmail("user@example.com");
+		userDTO.setVkId(null);
+		userDTO.setPassword("password");
+
+		Mockito.when(userRepository.findByEmailOrVkId(userDTO.getEmail(), userDTO.getVkId()))
+				.thenReturn(Optional.of(new User()));
+
+		// when, then
+		Assertions.assertThrows(ValidationException.class, () -> {
+			userService.createNewUser(userDTO);
+		});
+
+		Mockito.verify(userRepository, Mockito.times(1)).findByEmailOrVkId(userDTO.getEmail(), userDTO.getVkId());
 	}
 
 	/**
-	 * Тестирование метода createNewUser()
-	 * Не удачная попытка сохранения записи в таблицу
-	 * */
-
+	 * Тестирование метода findAll()
+	 * Получение всех пользователей
+	 */
 	@Test
-	void whenCreateNewUser_ThenReturnThrowEmailException()
-	{
-		UserDTO dto = UserDTO.builder()
-				.email("alex2000@mail.ru")
+	void findAll_shouldReturnListOfUserDTOs() {
+		// given
+		User user1 = User.builder()
+				.id(1L)
+				.nickname("user1")
 				.build();
 
-		Mockito.doReturn(Optional.of(new User()))
-				.when(userRepository)
-				.findByEmail("alex2000@mail.ru");
+		User user2 = User.builder()
+				.id(2L)
+				.nickname("user2")
+				.build();
 
-		assertThrows(ValidationException.class, () -> userService.createNewUser(dto));
+		List<User> userList = Arrays.asList(user1, user2);
 
-		Mockito.doReturn(new User())
-				.when(userMapper)
-				.toEntity(dto);
+		UserDTO userDto1 = UserDTO.builder()
+				.id(1L)
+				.nickname("user1")
+				.build();
 
-		Mockito.verify(userRepository, Mockito.times(0)).save(userMapper.toEntity(dto));
+		UserDTO userDto2 = UserDTO.builder()
+				.id(2L)
+				.nickname("user2")
+				.build();
+
+		List<UserDTO> expectedList = Arrays.asList(userDto1, userDto2);
+
+		Mockito.when(userRepository.findAll())
+				.thenReturn(userList);
+
+		Mockito.when(userMapper.toDTO(user1))
+				.thenReturn(userDto1);
+
+		Mockito.when(userMapper.toDTO(user2))
+				.thenReturn(userDto2);
+
+		// when
+		List<UserDTO> actualList = userService.findAll();
+
+		// then
+		Assertions.assertEquals(expectedList.size(), actualList.size());
+		Assertions.assertEquals(expectedList.get(0).getId(), actualList.get(0).getId());
+		Assertions.assertEquals(expectedList.get(0).getNickname(), actualList.get(0).getNickname());
+		Assertions.assertEquals(expectedList.get(1).getId(), actualList.get(1).getId());
+		Assertions.assertEquals(expectedList.get(1).getNickname(), actualList.get(1).getNickname());
+
+		Mockito.verify(userRepository, Mockito.times(1)).findAll();
+		Mockito.verify(userMapper, Mockito.times(1)).toDTO(user1);
+		Mockito.verify(userMapper, Mockito.times(1)).toDTO(user2);
+
+		log.info("Method findAll shouldReturnListOfUserDTOs works correctly");
 	}
-
 
 	/**
 	 * Тестирование метода findById(USER_ID)
 	 * Получение записи из таблицы по ID
-	 * */
+	 */
 	@Test
-	public void whenFindUserById_ThenReturnUser() {
-		User user = User.builder()
-				.id(USER_ID)
-				.email("akvamarin@gmail.com")
-				.phone("89991210000")
-				.password("$2a$10$ZmJxIt7HaqxXqwpvd7scte0UmLndHSn2DgZVS99Ug0xZRck2rJ6fO")
-				.nickname("Akvamarin")
-				.dateOfBirthday(LocalDate.of(1995,3,3))
-				.urlAvatar("http://********")
-				.createdAt(LocalDateTime.parse("2023-03-14T18:25:19.904272"))
-				.updatedAt(LocalDateTime.parse("2023-03-14T18:25:19.904272"))
-				.build();
+	void findById_shouldReturnUserDTO_whenUserExists() {
+		// given
+		long userId = 1L;
 
-		UserDTO expectedUserDTO = UserDTO.builder()
-				.id(USER_ID)
-				.email("akvamarin@gmail.com")
-				.phone("89991210000")
-				.password("$2a$10$ZmJxIt7HaqxXqwpvd7scte0UmLndHSn2DgZVS99Ug0xZRck2rJ6fO")
-				.nickname("Akvamarin")
-				.dateOfBirthday(LocalDate.of(1995,3,3))
-				.urlAvatar("http://********")
-				.build();
+		User user = new User();
+		user.setId(userId);
+		user.setNickname("test_user");
 
-		doReturn(Optional.of(user))
-				.when(userRepository)
-				.findById(USER_ID);
+		UserDTO expectedDto = new UserDTO();
+		expectedDto.setId(userId);
+		expectedDto.setNickname("test_user");
 
-		//doReturn(expectedUserDTO).when(userMapper.toDTO(user));
-		//Mockito.when(userMapper.toDTO(user)).thenReturn(expectedUserDTO);
+		Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+		Mockito.when(userMapper.toDTO(user)).thenReturn(expectedDto);
 
-		Assertions.assertTrue(userRepository.findById(USER_ID).isPresent());	//если существует объект
-		var actualResult = userService.findById(USER_ID);
+		// when
+		UserDTO actualDto = userService.findById(userId);
 
-		Assertions.assertEquals(expectedUserDTO.getId(), actualResult.getId());
-		Assertions.assertEquals(expectedUserDTO.getEmail(), actualResult.getEmail());
-
-		Mockito.verify(userRepository, Mockito.times(1))		//ожидаемое количество вызовов
-				.findById(USER_ID);
+		// then
+		assertThat(actualDto).isEqualTo(expectedDto);
+		Mockito.verify(userRepository).findById(userId);
+		Mockito.verify(userMapper).toDTO(user);
 	}
 
 	@Test
-	public void whenFindUserByIdAndNotFoundUser_ThenReturnException() {
-		final User user = null;
+	void findById_shouldThrowEntityNotFoundException_whenUserDoesNotExist() {
+		// given
+		long userId = 1L;
+		Mockito.when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
-		doReturn(Optional.ofNullable(user))
-				.when(userRepository)
-				.findById(NOT_FOUND_USER_ID);
-
-		Assertions.assertThrows(EntityNotFoundException.class, () ->
-			userService.findById(NOT_FOUND_USER_ID)
-		);
+		// when, then
+		assertThatThrownBy(() -> userService.findById(userId))
+				.isInstanceOf(EntityNotFoundException.class)
+				.hasMessage("User with ID 1 not found");
+		Mockito.verify(userRepository).findById(userId);
 	}
-
-
 
 	/**
 	 * Тестирование метода updateUser()
-	 * Обновление инфы о пользователе
-	 * */
+	 * Обновление инфо о пользователе
+	 */
 	@Test
-	void whenUpdateUser_ThenReturnUsers() {
-		UserDTO dto = UserDTO.builder()
-				.id(USER_ID)
-				.nickname("Akva")
-				.aboutMe("Люблю путешествовать")
-				.email("akvamarin@gmail.com")
-				.phone("89991210000")
-				.password("$2a$10$ZmJxIt7HaqxXqwpvd7scte0UmLndHSn2DgZVS99Ug0xZRck2rJ6fO")
-				.dateOfBirthday(LocalDate.of(1995,3,3))
-				.urlAvatar("http://********")
-				.build();
+	void updateUser_shouldUpdateUserAndReturnUpdatedUser() {
+		// given
+		UserDTO userDTO = new UserDTO();
+		userDTO.setId(1L);
+		userDTO.setNickname("updatedNickname");
 
-		User expectedUser = User.builder()
-				.id(USER_ID)
-				.nickname("Akva")
-				.aboutMe("Люблю путешествовать")
-				.build();
+		User existingUser = new User();
+		existingUser.setId(1L);
+		existingUser.setNickname("oldNickname");
 
-		var actualResult = userService.updateUser(dto);
+		Mockito.when(userRepository.findById(userDTO.getId()))
+				.thenReturn(Optional.of(existingUser));
 
-		assertNotNull(actualResult);
-		Assertions.assertEquals(expectedUser.getId(), actualResult.getId());
-		Assertions.assertEquals(expectedUser.getNickname(), actualResult.getNickname());
-		Assertions.assertEquals(expectedUser.getAboutMe(), actualResult.getAboutMe());
+		//используется для присвоения nickname для existingUser
+		//для того, чтобы иммитировать возврат existingUser из userRepository
+		//т.к. updateEntity маппер ничего не возвращает
+		Mockito.doAnswer(invocation -> {
+			UserDTO argUserDTO = invocation.getArgument(0);
+			User argUser = invocation.getArgument(1);
+			argUser.setNickname(argUserDTO.getNickname());
+			return null;
+		}).when(userMapper).updateEntity(userDTO, existingUser);
+
+		Mockito.when(userRepository.save(existingUser))
+				.thenReturn(existingUser);
+
+		// when
+		User result = userService.updateUser(userDTO);
+
+		// then
+		assertEquals(existingUser, result);
+		assertEquals(userDTO.getNickname(), existingUser.getNickname());
+		Mockito.verify(userRepository).findById(userDTO.getId());
+		Mockito.verify(userMapper).updateEntity(userDTO, existingUser);
+		Mockito.verify(userRepository).save(existingUser);
 	}
 
+	/**
+	 * Тестирование метода updateUser()
+	 * Когда пользователь для обновления не найден
+	 * вернуть EntityNotFoundException
+	 */
 	@Test
-	void whenUpdateUserAndUserNotFound_ThenReturnException() {
-		UserDTO dto = UserDTO.builder()
-				.id(NOT_FOUND_USER_ID)
-				.nickname("Akva")
-				.email("akvamarin@gmail.com")
-				.phone("89991210000")
-				.password("$2a$10$ZmJxIt7HaqxXqwpvd7scte0UmLndHSn2DgZVS99Ug0xZRck2rJ6fO")
-				.dateOfBirthday(LocalDate.of(1995,3,3))
-				.urlAvatar("http://********")
-				.build();
+	void updateUser_shouldThrowEntityNotFoundExceptionIfUserNotFound() {
+		// given
+		UserDTO userDTO = new UserDTO();
+		userDTO.setId(1L);
+		userDTO.setNickname("updatedNickname");
 
-		Assertions.assertThrows(EntityNotFoundException.class, () ->
-				userService.updateUser(dto)
-		);
+		when(userRepository.findById(userDTO.getId())).thenReturn(java.util.Optional.empty());
 
-		Mockito.doReturn(new User())
-				.when(userMapper)
-				.toEntity(dto);
-
-		Mockito.verify(userRepository, Mockito.times(0)).save(userMapper.toEntity(dto));
+		// when, then
+		assertThrows(EntityNotFoundException.class, () -> userService.updateUser(userDTO));
+		verify(userRepository, times(1)).findById(userDTO.getId());
+		verifyNoMoreInteractions(userRepository, userMapper, passwordEncoder);
 	}
+
 
 	/**
 	 * Тестирование метода deleteUser()
 	 * Удаление аккаунта пользователя из БД
 	 * */
 	@Test
-	void whenDeleteUserAndUserNotFound_ThenReturnTrue() {
-		assertTrue(userService.deleteById(USER_ID));
+	void deleteById_shouldDeleteExistingUserAndReturnTrue() {
+		// given
+		User user = new User();
+		user.setId(1L);
+
+		Mockito.when(userRepository.findById(1L))
+				.thenReturn(Optional.of(user));
+
+		// when
+		boolean isDeleted = userService.deleteById(1L);
+
+		// then
+		assertTrue(isDeleted);
+		Mockito.verify(userRepository, Mockito.times(1)).deleteById(1L);
 	}
 
 	@Test
-	void whenDeleteUserAndUserNotFound_ThenReturnException() {
-		Assertions.assertThrows(EntityNotFoundException.class, () ->
-				userService.deleteById(NOT_FOUND_USER_ID)
-		);
+	void deleteById_shouldThrowEntityNotFoundExceptionForNonExistingUser() {
+		// given
+		Mockito.when(userRepository.findById(1L))
+				.thenReturn(Optional.empty());
 
-		Mockito.verify(userRepository, Mockito.times(0)).deleteById(NOT_FOUND_USER_ID);
+		// when, then
+		EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> userService.deleteById(1L));
+		assertEquals("User with ID 1 not found", ex.getMessage());
 	}
 
 }

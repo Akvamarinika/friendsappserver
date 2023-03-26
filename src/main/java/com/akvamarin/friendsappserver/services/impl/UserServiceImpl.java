@@ -27,20 +27,25 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    //Новый пользователь:
-    //если сущест-ет email / vkId
     @Transactional
     @Override
     public User createNewUser(@NotNull UserDTO userDTO) throws ValidationException {
-        boolean isUserFromDBDuplicateEmail = userRepository.findByEmail(userDTO.getEmail()).isPresent();
+        boolean isUserFromDBDuplicateEmailOrVkId = userRepository.findByEmailOrVkId(userDTO.getEmail(), userDTO.getVkId()).isPresent();
 
-        if (isUserFromDBDuplicateEmail){    //NonUniqueResultException
-            throw new ValidationException("Email already registered!");
+        if (isUserFromDBDuplicateEmailOrVkId) {
+            if (userDTO.getVkId() != null) {
+                throw new ValidationException("VK ID already registered!");
+            } else if (userDTO.getEmail() != null) {
+                throw new ValidationException("Email already registered!");
+            }
         }
 
         User user = userMapper.toEntity(userDTO);
-        String hashedPassword = passwordEncoder.encode(userDTO.getPassword());
-        user.setPassword(hashedPassword);
+        if (userDTO.getPassword() != null){
+            String hashedPassword = passwordEncoder.encode(userDTO.getPassword());
+            user.setPassword(hashedPassword);
+        }
+
         user.setEnabled(true);
 
         return userRepository.save(user); //return User from DB

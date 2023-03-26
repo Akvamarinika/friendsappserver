@@ -32,6 +32,15 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
+    public List<Event> saveAll(List<EventDTO> eventDTOs) {
+        List<Event> events = eventDTOs.stream()
+                .map(eventMapper::toEntity)
+                .collect(Collectors.toList());
+        return eventRepository.saveAll(events);
+    }
+
+    @Transactional
+    @Override
     public List<EventDTO> findAll() {
         List<EventDTO> result = eventRepository.findAll().stream()
                 .map(eventMapper::toDTO)
@@ -72,6 +81,12 @@ public class EventServiceImpl implements EventService {
                 }).orElseThrow(EntityNotFoundException::new);
         log.info("Method *** deleteById *** : isDeletedEvent = {} with ID = {}", isDeletedEvent, eventId);
         return isDeletedEvent;
+    }
+
+    @Override
+    @Transactional
+    public void deleteAll() {
+        eventRepository.deleteAll();
     }
 
 }

@@ -2,6 +2,7 @@ package com.akvamarin.friendsappserver.config;
 
 import com.akvamarin.friendsappserver.security.jwt.JwtAuthenticationEntryPoint;
 import com.akvamarin.friendsappserver.security.jwt.JwtTokenAuthenticationFilter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -70,7 +71,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 
 
 }

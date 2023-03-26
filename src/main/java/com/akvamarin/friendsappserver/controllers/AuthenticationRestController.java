@@ -2,6 +2,7 @@ package com.akvamarin.friendsappserver.controllers;
 
 import com.akvamarin.friendsappserver.domain.dto.AuthServerToken;
 import com.akvamarin.friendsappserver.domain.dto.AuthUserParamDTO;
+import com.akvamarin.friendsappserver.domain.dto.AuthUserSocialDTO;
 import com.akvamarin.friendsappserver.domain.dto.UserDTO;
 import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.domain.dto.responseerror.ValidationErrorResponse;
@@ -53,6 +54,26 @@ public class AuthenticationRestController {
     }
 
     @Operation(
+            summary = "Sign in user with Auth2",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "User logged in"),
+                    @ApiResponse(responseCode = "400", description = "Wrong request format",
+                            content = @Content(schema = @Schema(implementation = ValidationErrorResponse.class)))
+            }
+    )
+    @PostMapping(value = "/oauth2", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AuthServerToken> loginWithOauth2(@RequestBody @Valid AuthUserSocialDTO userSocialDTO) {
+        try {
+            AuthServerToken authServerToken = authenticationUserService.authOAuth2(userSocialDTO);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.AUTHORIZATION, authServerToken.getToken())
+                    .body(authServerToken);
+        } catch (BadCredentialsException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+    @Operation(
             summary = "Register new user",
             responses = {
                     @ApiResponse(responseCode = "201", description = "User is registered"),
@@ -62,7 +83,7 @@ public class AuthenticationRestController {
     )
     @PostMapping(value = "/registration", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> registration(@Valid @RequestBody UserDTO userDTO) {
-        final User user = authenticationUserService.register(userDTO);
+        final User user = authenticationUserService.registration(userDTO);
         final URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -71,4 +92,5 @@ public class AuthenticationRestController {
 
         return ResponseEntity.created(uri).build();
     }
+
 }

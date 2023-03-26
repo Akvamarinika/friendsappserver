@@ -11,7 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.constraints.NotNull;
 import java.security.Key;
 
-@ConstructorBinding
+@ConstructorBinding //использовать конструктор
 @ConfigurationProperties("jwt.token.properties") // значения присвоятся из конфига
 @Validated // для проверки на @NotNull
 @Getter

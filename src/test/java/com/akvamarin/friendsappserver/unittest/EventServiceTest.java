@@ -36,9 +36,6 @@ public class EventServiceTest {
     @InjectMocks
     private EventServiceImpl eventService;
 
-    /**
-     * при допустимых входных данных метод возвращает EventDTO, равный исходным входным данным.
-     * */
     @Test
     void createNewEvent_validInput_returnCreatedEvent() {
         EventDTO eventDTO = new EventDTO();

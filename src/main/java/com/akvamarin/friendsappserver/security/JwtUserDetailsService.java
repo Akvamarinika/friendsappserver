@@ -2,6 +2,7 @@ package com.akvamarin.friendsappserver.security;
 
 import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.repositories.UserRepository;
+import com.akvamarin.friendsappserver.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,22 +23,25 @@ public class JwtUserDetailsService implements UserDetailsService {
     @Transactional
     @Override
     public User loadUserByUsername(String login) throws UsernameNotFoundException { // генерирует user по login(username)
-        if (login.matches("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")){
-            User user =  userRepository
+        User user;
+
+        if (login.matches(Constants.PATTERN_EMAIL)){
+            user = userRepository
                     .findByEmail(login)
                     .orElseThrow(() -> new UsernameNotFoundException(String.format("Email: %s, not found", login)));
             log.info("Method *** loadUserByUsername *** : JWT User with username(email) = {}", login);
-            return user;
+        } else {
+            user = userRepository
+                    .findByVkId(login)
+                    .orElseThrow(() -> new UsernameNotFoundException(String.format("VK ID: %s, not found", login)));
+                    log.info("Method *** loadUserByUsername *** : JWT User with username(VK ID) = {}", login);
+        }
+        return user;
+    }
+}
+
+
        /* } else if (login.matches("^\\d{11}$")){
             return userRepository
                     .findByPhone(login)
                     .orElseThrow(() -> new UsernameNotFoundException(String.format("Phone: %s, not found", login))); */
-        } else {
-            User user = userRepository
-                    .findByVkId(login)
-                    .orElseThrow(() -> new UsernameNotFoundException(String.format("VK ID: %s, not found", login)));
-                    log.info("Method *** loadUserByUsername *** : JWT User with username(VK ID) = {}", login);
-           return user;
-        }
-    }
-}

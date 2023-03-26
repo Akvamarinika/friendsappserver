@@ -30,11 +30,9 @@ public class Event {
     private String description;
     private LocalDate date;
 
-    //@Enumerated(EnumType.STRING)
     @Column(name = "e_period_of_time")
     private PeriodOfTime periodOfTime;
 
-    //@Enumerated(EnumType.STRING)
     @Column(name = "e_partner")
     private Partner partner;
 
@@ -55,6 +53,4 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User user;
-
-
 }
