@@ -24,9 +24,9 @@ public class CityDTO implements Serializable {
     private String name;
     private double lat;
     private double lon;
-    private Region region;
+    private Long regionID;
 
     @NotBlank
-    private Country country;
+    private Long  countryID;
 
 }

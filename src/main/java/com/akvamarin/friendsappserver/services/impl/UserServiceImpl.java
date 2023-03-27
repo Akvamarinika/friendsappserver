@@ -1,13 +1,15 @@
 package com.akvamarin.friendsappserver.services.impl;
+import com.akvamarin.friendsappserver.domain.dto.AuthUserSocialDTO;
 import com.akvamarin.friendsappserver.domain.entity.User;
+import com.akvamarin.friendsappserver.domain.entity.location.City;
 import com.akvamarin.friendsappserver.repositories.UserRepository;
 import com.akvamarin.friendsappserver.domain.dto.UserDTO;
 import com.akvamarin.friendsappserver.domain.mapper.UserMapper;
+import com.akvamarin.friendsappserver.services.CityService;
 import com.akvamarin.friendsappserver.services.UserService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,20 +26,46 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor    //конструктор с 1 параметром для каждого поля
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final CityService cityService;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
+    //ВК регист-ия
+    @Transactional
+    @Override
+    public User createNewUserVK(@NotNull AuthUserSocialDTO userSocialDTO) throws ValidationException {
+        boolean isUserFromDBDuplicateEmailOrVkId = userRepository.findByEmailOrVkId(
+                userSocialDTO.getEmail(), userSocialDTO.getVkId()).isPresent();
+
+        //TODO: определить точно: дубликат почты или ВК uuid
+      /*  if (isUserFromDBDuplicateEmailOrVkId) {
+            if (userSocialDTO.getVkId() != null) {
+                throw new ValidationException("VK ID already registered!");
+            } else if (userSocialDTO.getEmail() != null) {
+                throw new ValidationException("Email already registered!");
+            }
+        }*/
+
+        if (isUserFromDBDuplicateEmailOrVkId) {
+            throw new ValidationException("VK ID or Email already registered!");
+        }
+
+        City city = cityService.findCityIfNoCreateNew(userSocialDTO.getCity(), userSocialDTO.getCountry());
+        User user = userMapper.toEntity(userSocialDTO);
+        user.setCity(city);
+        user.setEnabled(true);
+
+        return userRepository.save(user); //return User from DB
+    }
+
+    //обычная регист-ия
     @Transactional
     @Override
     public User createNewUser(@NotNull UserDTO userDTO) throws ValidationException {
-        boolean isUserFromDBDuplicateEmailOrVkId = userRepository.findByEmailOrVkId(userDTO.getEmail(), userDTO.getVkId()).isPresent();
+        boolean isUserFromDBDuplicateEmail = userRepository.findByEmail(userDTO.getEmail()).isPresent();
 
-        if (isUserFromDBDuplicateEmailOrVkId) {
-            if (userDTO.getVkId() != null) {
-                throw new ValidationException("VK ID already registered!");
-            } else if (userDTO.getEmail() != null) {
-                throw new ValidationException("Email already registered!");
-            }
+        if (isUserFromDBDuplicateEmail) {
+           throw new ValidationException("Email already registered!");
         }
 
         User user = userMapper.toEntity(userDTO);

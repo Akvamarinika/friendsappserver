@@ -11,7 +11,9 @@ import com.akvamarin.friendsappserver.security.social.VkProperties;
 import com.akvamarin.friendsappserver.services.AuthenticationUserService;
 import com.akvamarin.friendsappserver.services.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -85,21 +87,38 @@ public class AuthenticationUserServiceImpl implements AuthenticationUserService 
 
     @Override
     public AuthServerToken authOAuth2(@NonNull AuthUserSocialDTO userSocialDTO) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(userSocialDTO.getUsername());
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails,
-                null, userDetails.getAuthorities());
+        CheckTokenVkResponse checkTokenVkResponse;
+        try {
+            checkTokenVkResponse = requestTokenUserVK(userSocialDTO);
+        } catch (JsonProcessingException ex) {
+            log.error("Method *** authOAuth2 *** : Error = {}", ex.getMessage());
+            throw new ValidationException("Token validation failed with an error.");
+        }
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = tokenProvider.createToken(authentication);
-        User user = (User) authentication.getPrincipal();
-        log.info("Method *** authVK *** : Username = {} logged with Vkontakte", user.getUsername());
-        return new AuthServerToken (token);
+        log.info("Method *** authOAuth2 *** : checkTokenVkResponse = {} ", checkTokenVkResponse.toString());
+        if (checkTokenVkResponse.getSuccess() == 1) {
+            userService.createNewUserVK(userSocialDTO);
+
+            UserDetails userDetails = userDetailsService.loadUserByUsername(userSocialDTO.getUsername());
+            Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails,
+                    null, userDetails.getAuthorities());
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String token = tokenProvider.createToken(authentication);
+            User user = (User) authentication.getPrincipal();
+            log.info("Method *** authOAuth2 *** : Username = {} logged with Vkontakte", user.getUsername());
+            return new AuthServerToken (token);
+        }
+
+        throw new ValidationException("Token VK is invalid.");
     }
 
+    //проверка ВК токена
     private CheckTokenVkResponse requestTokenUserVK(AuthUserSocialDTO userSocialDTO) throws JsonProcessingException {
         RestTemplate restTemplate = new RestTemplate();
 
         URI uri = UriComponentsBuilder.fromUriString(vkProperties.getUrlSecure())
+                .queryParam("v", vkProperties.getVersion())
                 .queryParam("token", userSocialDTO.getSocialToken())
                 .queryParam("client_secret", vkProperties.getSecretKey())
                 .queryParam("access_token", vkProperties.getAccessToken())
@@ -107,8 +126,16 @@ public class AuthenticationUserServiceImpl implements AuthenticationUserService 
                 .toUri();
 
         String response = restTemplate.getForObject(uri, String.class);
+        log.info("Method *** authOAuth2 *** : uri = {} response = {}", uri, response);
+
         ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(response, CheckTokenVkResponse.class);
+        JsonNode jsonNode = objectMapper.readTree(response);
+        int success = jsonNode.get("response").get("success").asInt();
+        long date = jsonNode.get("response").get("date").asLong();
+        int expire = jsonNode.get("response").get("expire").asInt();
+        long userId = jsonNode.get("response").get("user_id").asLong();
+
+        return new CheckTokenVkResponse(success, date, expire, userId);
     }
 
 }

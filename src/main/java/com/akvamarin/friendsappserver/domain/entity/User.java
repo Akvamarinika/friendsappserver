@@ -50,7 +50,6 @@ public class User implements UserDetails {
     private String nickname;
 
     @Column(name = "date_of_birthday", nullable = false)
-    //@Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private LocalDate dateOfBirthday;
 
@@ -86,20 +85,17 @@ public class User implements UserDetails {
     @CollectionTable//(name="e_role", joinColumns=@JoinColumn(name="role_id"))
     @Builder.Default
     @Enumerated(EnumType.STRING)
-    //@Column(name = "e_role")
     private Collection<Role> authorities = List.of(Role.USER);
 
     @CreatedDate
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
-   // @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime createdAt; //= LocalDateTime.now();
+    private LocalDateTime createdAt;
 
  //   @Transient
     @UpdateTimestamp
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
-    //@Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
 
     @Column(name = "vk_id", length = 64)

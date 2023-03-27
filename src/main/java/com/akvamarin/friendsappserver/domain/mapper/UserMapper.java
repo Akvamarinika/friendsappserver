@@ -1,13 +1,14 @@
 package com.akvamarin.friendsappserver.domain.mapper;
+
 import com.akvamarin.friendsappserver.domain.dto.AuthUserSocialDTO;
 import com.akvamarin.friendsappserver.domain.dto.UserDTO;
 import com.akvamarin.friendsappserver.domain.entity.User;
-import com.akvamarin.friendsappserver.domain.entity.location.City;
 import com.akvamarin.friendsappserver.domain.enums.Role;
 import org.mapstruct.*;
 
 import java.util.Collections;
 import java.util.Set;
+
 import static java.util.stream.Collectors.toSet;
 import static org.mapstruct.NullValueCheckStrategy.ALWAYS;
 import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
@@ -17,7 +18,7 @@ public abstract class UserMapper {
 
     @BeanMapping(nullValueCheckStrategy = ALWAYS, nullValuePropertyMappingStrategy = IGNORE)
     @Mapping(target = "password", ignore = true)
-    @Mapping(source = "authorities", target = "roles")
+    @Mapping(target = "roles", source = "authorities")
     public abstract UserDTO toDTO(User user);
 
     @InheritInverseConfiguration
@@ -29,36 +30,29 @@ public abstract class UserMapper {
     @Mapping(source = "roles", target = "authorities", qualifiedByName = "stringToRole")
     public abstract User toEntity(UserDTO dto);
 
-    @Mapping(source = "roles", target = "authorities", qualifiedByName = "stringToRole")
+    @BeanMapping(nullValueCheckStrategy = ALWAYS, nullValuePropertyMappingStrategy = IGNORE)
+    @Mapping(target = "authorities", source = "roles", qualifiedByName = "stringToRole")
     public abstract void updateEntity(UserDTO dto, @MappingTarget User user); // @MappingTarget - обновляет переданный объект
 
-    //public abstract AuthUserSocialDTO toDTO(User user);
+    //AuthUserSocialDTO
+    @BeanMapping(nullValueCheckStrategy = ALWAYS, nullValuePropertyMappingStrategy = IGNORE)
     @Mapping(target = "email", source = "username")
-    @Mapping(target = "password", ignore = true)
-    @Mapping(target = "dateOfBirthday", ignore = true)
-    @Mapping(target = "nickname", ignore = true)
-    @Mapping(target = "sex", ignore = true)
-    @Mapping(target = "aboutMe", ignore = true)
-    @Mapping(target = "smoking", ignore = true)
-    @Mapping(target = "alcohol", ignore = true)
-    @Mapping(target = "psychotype", ignore = true)
-    @Mapping(target = "urlAvatar", ignore = true)
-    @Mapping(target = "city", source = "city", qualifiedByName = "stringToCity")
-    @Mapping(target = "country", source = "country", qualifiedByName = "stringToCountry")
-    @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "password", ignore = true) // no
+    @Mapping(target = "dateOfBirthday", source = "dateOfBirth", dateFormat = "d.M.yyyy") //yyyy-MM-dd
+    @Mapping(target = "nickname", source = "firstName")
+    @Mapping(target = "sex", source = "sex")
+    @Mapping(target = "aboutMe", ignore = true) // *
+    @Mapping(target = "smoking", ignore = true) // *
+    @Mapping(target = "alcohol", ignore = true) // *
+    @Mapping(target = "psychotype", ignore = true) // *
+    @Mapping(target = "urlAvatar", source = "photo")
+    @Mapping(target = "city", ignore = true)  // add from city service
+    @Mapping(target = "authorities", source = "roles", qualifiedByName = "stringToRole") // default
     public abstract User toEntity(AuthUserSocialDTO socialDTO);
 
-    @Mapping(target = "username", source = "email")
-    @Mapping(target = "uuid", expression = "java(java.util.UUID.randomUUID().toString())")
-    @Mapping(target = "socialToken", ignore = true)
-    @Mapping(target = "vkId", ignore = true)
-    @Mapping(target = "firstName", ignore = true)
-    @Mapping(target = "lastName", ignore = true)
-    @Mapping(target = "photo", ignore = true)
-    @Mapping(target = "dateOfBirth", ignore = true)
-    @Mapping(target = , ignore = true)
-    @Mapping(target = , ignore = true)
-    @Mapping(target = "sex", ignore = true)
+    @Mapping(target = "authorities", source = "roles", qualifiedByName = "stringToRole")
+    @Mapping(target = "city", ignore = true)  // add from city service
+    public abstract void updateEntity(AuthUserSocialDTO socialDTO, @MappingTarget User user); // @MappingTarget - обновляет переданный объект
 
     @Named("stringToRole")
     protected Set<Role> stringToRole(Set<String> authorities) {
@@ -70,13 +64,4 @@ public abstract class UserMapper {
         return  Collections.emptySet();
     }
 
-    @Named("stringToCity")
-    protected City stringToCity(String city) {
-        if (authorities != null) {
-            return authorities.stream()
-                    .map(Role::valueOf)
-                    .collect(toSet());
-        }
-        return  Collections.emptySet();
-    }
 }
