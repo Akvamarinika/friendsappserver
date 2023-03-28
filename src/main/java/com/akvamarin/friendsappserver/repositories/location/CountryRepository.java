@@ -1,4 +1,4 @@
-package com.akvamarin.friendsappserver.repositories;
+package com.akvamarin.friendsappserver.repositories.location;
 
 import com.akvamarin.friendsappserver.domain.entity.location.Country;
 import com.akvamarin.friendsappserver.domain.entity.location.FederalDistrict;

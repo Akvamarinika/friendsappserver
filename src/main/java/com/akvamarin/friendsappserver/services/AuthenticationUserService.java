@@ -10,6 +10,5 @@ import lombok.NonNull;
 public interface AuthenticationUserService {
     User registration(UserDTO userDTO);
     AuthServerToken authentication(@NonNull AuthUserParamDTO authUserParamDTO);
-    User registerOAuth2(@NonNull AuthUserSocialDTO userSocialDTO);
     AuthServerToken authOAuth2(@NonNull AuthUserSocialDTO userSocialDTO);
 }

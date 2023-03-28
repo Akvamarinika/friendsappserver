@@ -1,11 +1,10 @@
 package com.akvamarin.friendsappserver.services.impl;
 
-import com.akvamarin.friendsappserver.domain.dto.CityDTO;
 import com.akvamarin.friendsappserver.domain.entity.location.City;
 import com.akvamarin.friendsappserver.domain.entity.location.Country;
 import com.akvamarin.friendsappserver.domain.mapper.CityMapper;
-import com.akvamarin.friendsappserver.repositories.CityRepository;
-import com.akvamarin.friendsappserver.repositories.CountryRepository;
+import com.akvamarin.friendsappserver.repositories.location.CityRepository;
+import com.akvamarin.friendsappserver.repositories.location.CountryRepository;
 import com.akvamarin.friendsappserver.services.CityService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
-import java.util.Optional;
 
 @Slf4j
 @Service

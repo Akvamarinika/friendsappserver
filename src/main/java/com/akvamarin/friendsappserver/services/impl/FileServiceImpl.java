@@ -1,10 +1,10 @@
 package com.akvamarin.friendsappserver.services.impl;
 
 import com.akvamarin.friendsappserver.domain.entity.location.City;
-import com.akvamarin.friendsappserver.repositories.CityRepository;
-import com.akvamarin.friendsappserver.repositories.CountryRepository;
-import com.akvamarin.friendsappserver.repositories.FederalDistrictRepository;
-import com.akvamarin.friendsappserver.repositories.RegionRepository;
+import com.akvamarin.friendsappserver.repositories.location.CityRepository;
+import com.akvamarin.friendsappserver.repositories.location.CountryRepository;
+import com.akvamarin.friendsappserver.repositories.location.FederalDistrictRepository;
+import com.akvamarin.friendsappserver.repositories.location.RegionRepository;
 import com.akvamarin.friendsappserver.services.FileService;
 import com.akvamarin.friendsappserver.utils.ExcelHelper;
 import lombok.RequiredArgsConstructor;

@@ -3,7 +3,6 @@ package com.akvamarin.friendsappserver.services.impl;
 import com.akvamarin.friendsappserver.domain.dto.*;
 import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.domain.mapper.UserMapper;
-import com.akvamarin.friendsappserver.repositories.CountryRepository;
 import com.akvamarin.friendsappserver.repositories.UserRepository;
 import com.akvamarin.friendsappserver.security.JwtUserDetailsService;
 import com.akvamarin.friendsappserver.security.jwt.JwtTokenProvider;
@@ -13,7 +12,6 @@ import com.akvamarin.friendsappserver.services.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +38,6 @@ public class AuthenticationUserServiceImpl implements AuthenticationUserService 
     private final VkProperties vkProperties;
     private final UserMapper userMapper;
     private final UserRepository userRepository;
-    private final CountryRepository countryRepository;
 
     @Override
     public User registration(@NonNull UserDTO userDTO) {
@@ -65,26 +62,7 @@ public class AuthenticationUserServiceImpl implements AuthenticationUserService 
         return new AuthServerToken (token);
     }
 
-    @Override
-    public User registerOAuth2(@NonNull AuthUserSocialDTO userSocialDTO) {
-        CheckTokenVkResponse checkTokenVkResponse;
-        try {
-            checkTokenVkResponse = requestTokenUserVK(userSocialDTO);
-        } catch (JsonProcessingException ex) {
-            log.error("Method *** authOAuth2 *** : Error = {}", ex.getMessage());
-            throw new ValidationException("Token validation failed with an error.");
-        }
-
-        if (checkTokenVkResponse.getSuccess() == 1) {
-            User user = userMapper.toEntity(userSocialDTO);
-            user.setEnabled(true);
-            log.info("Method *** registerOAuth2 *** : User = {}", user);
-            return userRepository.save(user);
-        }
-        throw new ValidationException("Token is invalid.");
-    }
-
-
+    //VK
     @Override
     public AuthServerToken authOAuth2(@NonNull AuthUserSocialDTO userSocialDTO) {
         CheckTokenVkResponse checkTokenVkResponse;
