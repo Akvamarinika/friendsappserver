@@ -1,9 +1,15 @@
 package com.akvamarin.friendsappserver.unittest;
 
+import com.akvamarin.friendsappserver.domain.dto.AuthUserSocialDTO;
 import com.akvamarin.friendsappserver.domain.dto.UserDTO;
 import com.akvamarin.friendsappserver.domain.entity.User;
+import com.akvamarin.friendsappserver.domain.entity.location.City;
+import com.akvamarin.friendsappserver.domain.entity.location.Country;
+import com.akvamarin.friendsappserver.domain.enums.Role;
+import com.akvamarin.friendsappserver.domain.enums.Sex;
 import com.akvamarin.friendsappserver.domain.mapper.UserMapper;
 import com.akvamarin.friendsappserver.repositories.UserRepository;
+import com.akvamarin.friendsappserver.services.CityService;
 import com.akvamarin.friendsappserver.services.UserService;
 import com.akvamarin.friendsappserver.services.impl.UserServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +25,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.ValidationException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -44,6 +49,9 @@ class UserServiceTest {
 	@Mock
 	private PasswordEncoder passwordEncoder;
 
+	@Mock
+	private CityService cityService;
+
 	@InjectMocks
 	private UserServiceImpl userService;
 
@@ -53,19 +61,23 @@ class UserServiceTest {
 	 * Сохранение записи в таблицу
 	 */
 	@Test
-	void createNewUser_withNonExistingEmailOrVkId_shouldCreateUser() throws ValidationException {
+	void createNewUser_withNonExistingEmail_shouldCreateUser() throws ValidationException {
 		// given
 		UserDTO userDTO = new UserDTO();
+		userDTO.setUsername("user@example.com");
 		userDTO.setEmail("user@example.com");
-		userDTO.setVkId(null);
 		userDTO.setPassword("password");
+		userDTO.setDateOfBirthday(LocalDate.parse("2000-01-02"));
+		userDTO.setNickname("user");
 
 		User user = new User();
+		user.setUsername(userDTO.getUsername());
 		user.setEmail(userDTO.getEmail());
-		user.setVkId(userDTO.getVkId());
 		user.setPassword(userDTO.getPassword());
+		user.setDateOfBirthday(userDTO.getDateOfBirthday());
+		user.setNickname(userDTO.getNickname());
 
-		Mockito.when(userRepository.findByEmailOrVkId(userDTO.getEmail(), userDTO.getVkId()))
+		Mockito.when(userRepository.findByEmail(userDTO.getEmail()))
 				.thenReturn(Optional.empty());
 
 		Mockito.when(userMapper.toEntity(userDTO))
@@ -83,50 +95,120 @@ class UserServiceTest {
 		// then
 		Assertions.assertNotNull(result);
 		Assertions.assertEquals(user.getEmail(), result.getEmail());
-		Assertions.assertEquals(user.getVkId(), result.getVkId());
 		Assertions.assertEquals(user.getPassword(), result.getPassword());
 		Assertions.assertTrue(result.isEnabled());
 
-		Mockito.verify(userRepository, Mockito.times(1)).findByEmailOrVkId(userDTO.getEmail(), userDTO.getVkId());
+		Mockito.verify(userRepository, Mockito.times(1)).findByEmail(userDTO.getEmail());
 		Mockito.verify(userMapper, Mockito.times(1)).toEntity(userDTO);
 		Mockito.verify(passwordEncoder, Mockito.times(1)).encode(userDTO.getPassword());
 		Mockito.verify(userRepository, Mockito.times(1)).save(user);
 	}
 
 	@Test
-	void createNewUser_withExistingVkId_shouldThrowValidationException() {
-		// given
-		UserDTO userDTO = new UserDTO();
-		userDTO.setEmail(null);
-		userDTO.setVkId("12345");
-		userDTO.setPassword("password");
-
-		Mockito.when(userRepository.findByEmailOrVkId(userDTO.getEmail(), userDTO.getVkId()))
-				.thenReturn(Optional.of(new User()));
-
-		// when, then
-		Assertions.assertThrows(ValidationException.class, () -> {
-			userService.createNewUser(userDTO);
-		});
-
-		Mockito.verify(userRepository, Mockito.times(1)).findByEmailOrVkId(userDTO.getEmail(), userDTO.getVkId());
-	}
-
-	@Test
 	void createNewUser_withExistingEmail_shouldThrowValidationException() {
 		// given
 		UserDTO userDTO = new UserDTO();
+		userDTO.setUsername("user@example.com");
 		userDTO.setEmail("user@example.com");
-		userDTO.setVkId(null);
 		userDTO.setPassword("password");
+		userDTO.setDateOfBirthday(LocalDate.parse("2000-01-02"));
+		userDTO.setNickname("user");
+
+		Mockito.when(userRepository.findByEmail(userDTO.getEmail()))
+				.thenReturn(Optional.of(new User()));
+
+		// when, then
+		Assertions.assertThrows(ValidationException.class, () -> userService.createNewUser(userDTO));
+
+		Mockito.verify(userRepository, Mockito.times(1)).findByEmail(userDTO.getEmail());
+	}
+
+	/**
+	 * Тестирование метода createNewUserVK()
+	 * Сохранение записи в таблицу
+	 */
+	@Test
+	void createNewUserVK_withNonExistingVkIdOrEmail_shouldCreateUser() throws ValidationException {
+		// given
+		AuthUserSocialDTO userDTO = AuthUserSocialDTO.builder()
+				.username("vk@example.com")
+				.email("vk@example.com")
+				.vkId("12345678")
+				.socialToken("user_vk_token")
+				.dateOfBirth("2000-01-02")
+				.sex(Sex.MALE)
+				.city("Irkutsk")
+				.country("Russia")
+				.roles(Collections.singleton(Role.USER.name()))
+				.build();
+
+		Country country = Country.builder()
+				.id(1L)
+				.name(userDTO.getCountry())
+				.build();
+
+		City city = City.builder()
+				.id(1L)
+				.name(userDTO.getCity())
+				.country(country)
+				.build();
+
+		User user = new User();
+		user.setUsername(userDTO.getUsername());
+		user.setEmail(userDTO.getEmail());
+		user.setVkId(userDTO.getVkId());
+		user.setDateOfBirthday(LocalDate.parse(userDTO.getDateOfBirth()));
+		user.setSex(userDTO.getSex());
+		user.setCity(city);
+
+		Mockito.when(userRepository.findByEmailOrVkId(userDTO.getEmail(), userDTO.getVkId()))
+				.thenReturn(Optional.empty());
+
+		Mockito.when(userMapper.toEntity(userDTO))
+				.thenReturn(user);
+
+		Mockito.when(cityService.findCityIfNoCreateNew(userDTO.getCity(), userDTO.getCountry()))
+				.thenReturn(city);
+
+		Mockito.when(userRepository.save(user))
+				.thenReturn(user);
+
+		// when
+		User result = userService.createNewUserVK(userDTO);
+
+		// then
+		Assertions.assertNotNull(result);
+		Assertions.assertEquals(user.getEmail(), result.getEmail());
+		Assertions.assertEquals(user.getVkId(), result.getVkId());
+		Assertions.assertEquals(user.getPassword(), result.getPassword());
+		Assertions.assertTrue(result.isEnabled());
+
+		Mockito.verify(userRepository, Mockito.times(1)).findByEmailOrVkId(userDTO.getEmail(), userDTO.getVkId());
+		Mockito.verify(userMapper, Mockito.times(1)).toEntity(userDTO);
+		Mockito.verify(cityService, Mockito.times(1)).findCityIfNoCreateNew(userDTO.getCity(), userDTO.getCountry());
+		Mockito.verify(userRepository, Mockito.times(1)).save(user);
+	}
+
+	@Test
+	void createNewUserVK_withExistingVkId_shouldThrowValidationException() {
+		// given
+		AuthUserSocialDTO userDTO = AuthUserSocialDTO.builder()
+				.username("vk@example.com")
+				.email("vk@example.com")
+				.vkId("12345678")
+				.socialToken("user_vk_token")
+				.dateOfBirth("2000-01-02")
+				.sex(Sex.MALE)
+				.city("Irkutsk")
+				.country("Russia")
+				.roles(Collections.singleton(Role.USER.name()))
+				.build();
 
 		Mockito.when(userRepository.findByEmailOrVkId(userDTO.getEmail(), userDTO.getVkId()))
 				.thenReturn(Optional.of(new User()));
 
 		// when, then
-		Assertions.assertThrows(ValidationException.class, () -> {
-			userService.createNewUser(userDTO);
-		});
+		Assertions.assertThrows(ValidationException.class, () -> userService.createNewUserVK(userDTO));
 
 		Mockito.verify(userRepository, Mockito.times(1)).findByEmailOrVkId(userDTO.getEmail(), userDTO.getVkId());
 	}

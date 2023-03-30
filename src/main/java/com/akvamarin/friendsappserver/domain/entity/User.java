@@ -31,7 +31,7 @@ import java.util.List;
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "username", unique = true)   // for auth
     private String username;
@@ -50,7 +50,7 @@ public class User implements UserDetails {
     private String nickname;
 
     @Column(name = "date_of_birthday", nullable = false)
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @DateTimeFormat(pattern = "dd.MM.yyyy")
     private LocalDate dateOfBirthday;
 
     //@Enumerated(EnumType.STRING)
