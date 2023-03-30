@@ -41,25 +41,25 @@ public class AdviceExceptionHandlerController {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ValidationErrorResponse badRequest(MethodArgumentNotValidException exception) {
         final BindingResult bindingResult = exception.getBindingResult();
-        return new ValidationErrorResponse(buildMessage(bindingResult), buildErrors(bindingResult));
+        return new ValidationErrorResponse(HttpStatus.BAD_REQUEST.value(), buildMessage(bindingResult), buildErrors(bindingResult));
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST) //400, при ошибке собственной валидации
     @ExceptionHandler(ValidationException.class)
     public ErrorResponse badRequest(ValidationException exception) {
-        return new ErrorResponse(exception.getMessage());
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
     public ErrorResponse conflict(IllegalArgumentException exception) {
-        return new ErrorResponse(exception.getMessage());
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND) //404, когда сущность в БД не найдена
     @ExceptionHandler(EntityNotFoundException.class)
     public ErrorResponse notFound(EntityNotFoundException exception) {
-        return new ErrorResponse(exception.getMessage());
+        return new ErrorResponse(HttpStatus.NOT_FOUND.value(), exception.getMessage());
     }
 
    /* @ResponseStatus(HttpStatus.NO_CONTENT) //204, когда в БД удалена запись
@@ -71,14 +71,14 @@ public class AdviceExceptionHandlerController {
     @ResponseStatus(HttpStatus.FORBIDDEN) // 401, ресурс недоступен для данного типа пользователей
     @ExceptionHandler(AccessDeniedException.class)
     public ErrorResponse handleAccessDeniedException(AccessDeniedException exception) {
-        return new ErrorResponse(exception.getMessage());
+        return new ErrorResponse(HttpStatus.FORBIDDEN.value(), exception.getMessage());
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR) //500
     @ExceptionHandler(RuntimeException.class)
     public ErrorResponse error(RuntimeException exception) {
         log.error("", exception);
-        return new ErrorResponse(exception.getMessage());
+        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), exception.getMessage());
     }
 
     private String buildMessage(BindingResult bindingResult) {

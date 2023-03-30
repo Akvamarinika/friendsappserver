@@ -31,22 +31,22 @@ public class AuthUserSocialDTO {
     @NotNull
     private String socialToken;
 
-    @NotNull
+
     private String firstName;
 
-    @NotNull
+
     private String lastName;
 
-    @NotNull
+
     private String photo;
 
-    @NotNull
+
     private String dateOfBirth;
 
-    @NotNull
+
     private String city;
 
-    @NotNull
+
     private String country;
 
     @NotNull

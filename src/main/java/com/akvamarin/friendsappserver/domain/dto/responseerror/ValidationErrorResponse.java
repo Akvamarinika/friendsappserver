@@ -20,8 +20,8 @@ public class ValidationErrorResponse
         extends ErrorResponse {
     private final List<ErrorDescription> errors;
 
-    public ValidationErrorResponse(String message, List<ErrorDescription> errors) {
-        super(message);
+    public ValidationErrorResponse(int statusCode, String message, List<ErrorDescription> errors) {
+        super(statusCode, message);
         this.errors = errors;
     }
 }

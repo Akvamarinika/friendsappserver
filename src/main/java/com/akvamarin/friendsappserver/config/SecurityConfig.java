@@ -2,7 +2,6 @@ package com.akvamarin.friendsappserver.config;
 
 import com.akvamarin.friendsappserver.security.jwt.JwtAuthenticationEntryPoint;
 import com.akvamarin.friendsappserver.security.jwt.JwtTokenAuthenticationFilter;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,8 +12,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import javax.annotation.PostConstruct;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -52,6 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         httpSecurity.authorizeRequests()//предоставить доступ:
                 .antMatchers("/api/v1/auth/**").permitAll() //для всех
+                .antMatchers("/api/v1/files/**").permitAll()
                 .antMatchers(ADMIN_ENDPOINT).hasRole("ADMIN") //только для админа
                 .antMatchers(LOGIN_ENDPOINT).permitAll() //для всех
                 .antMatchers(SWAGGER_URLS).permitAll() //для всех

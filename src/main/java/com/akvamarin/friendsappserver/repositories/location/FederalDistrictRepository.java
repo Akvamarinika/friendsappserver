@@ -8,5 +8,10 @@ import java.util.Optional;
 
 @Repository
 public interface FederalDistrictRepository extends JpaRepository<FederalDistrict,Long> {
-    Optional<FederalDistrict> findFederalDistrictByName(String name);
+
+    //Optional<FederalDistrict> findByNameAndRegions_Id(String name, Long id);
+
+    Optional<FederalDistrict> findByName(String name);
+
+    // Optional<FederalDistrict> findByNameAndRegion_Id(String name, Long id);
 }

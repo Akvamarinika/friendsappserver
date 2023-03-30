@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -36,8 +37,6 @@ public class AuthenticationUserServiceImpl implements AuthenticationUserService 
     private final JwtTokenProvider tokenProvider;
     private final JwtUserDetailsService userDetailsService;
     private final VkProperties vkProperties;
-    private final UserMapper userMapper;
-    private final UserRepository userRepository;
 
     @Override
     public User registration(@NonNull UserDTO userDTO) {
@@ -73,7 +72,7 @@ public class AuthenticationUserServiceImpl implements AuthenticationUserService 
             throw new ValidationException("Token validation failed with an error.");
         }
 
-        log.info("Method *** authOAuth2 *** : checkTokenVkResponse = {} ", checkTokenVkResponse.toString());
+        log.info("Method *** authOAuth2 *** : checkTokenVkResponse = {} ", checkTokenVkResponse);
         if (checkTokenVkResponse.getSuccess() == 1) {
             userService.createNewUserVK(userSocialDTO);
 
@@ -103,17 +102,25 @@ public class AuthenticationUserServiceImpl implements AuthenticationUserService 
                 .build()
                 .toUri();
 
-        String response = restTemplate.getForObject(uri, String.class);
-        log.info("Method *** authOAuth2 *** : uri = {} response = {}", uri, response);
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(uri, String.class);
+        String response = responseEntity.getBody();
+        int statusCode = responseEntity.getStatusCodeValue();
 
+        log.info("Method *** authOAuth2 *** : uri = {} response = {} status code = {}", uri, response, statusCode);
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(response);
-        int success = jsonNode.get("response").get("success").asInt();
-        long date = jsonNode.get("response").get("date").asLong();
-        int expire = jsonNode.get("response").get("expire").asInt();
-        long userId = jsonNode.get("response").get("user_id").asLong();
 
-        return new CheckTokenVkResponse(success, date, expire, userId);
+
+        if (statusCode == 200 && jsonNode.has("response")) {
+            int success = jsonNode.get("response").get("success").asInt();
+            long date = jsonNode.get("response").get("date").asLong();
+            int expire = jsonNode.get("response").get("expire").asInt();
+            long userId = jsonNode.get("response").get("user_id").asLong();
+
+            return new CheckTokenVkResponse(success, date, expire, userId);
+        }
+
+        throw new ValidationException("Your VK token is not valid!");
     }
 
 }

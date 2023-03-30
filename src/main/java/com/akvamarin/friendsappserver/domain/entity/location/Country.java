@@ -12,13 +12,14 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name="countries")
+@Table(name = "countries",
+        uniqueConstraints = @UniqueConstraint(columnNames = "name"))
 public class Country {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    //@Column(unique = true)
     private String name;
 
     @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "country", fetch = FetchType.LAZY)

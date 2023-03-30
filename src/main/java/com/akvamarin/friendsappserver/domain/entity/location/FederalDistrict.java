@@ -3,9 +3,7 @@ package com.akvamarin.friendsappserver.domain.entity.location;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @ToString
@@ -13,7 +11,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name="federal_districts")
+@Table(name = "federal_districts",
+        uniqueConstraints = @UniqueConstraint(columnNames = "name"))
 @Entity
 public class FederalDistrict {
     @Id
@@ -39,4 +38,5 @@ public class FederalDistrict {
     public FederalDistrict(String name) {
         this.name = name;
     }
+
 }

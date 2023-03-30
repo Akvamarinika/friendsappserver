@@ -1,7 +1,3 @@
---TRUNCATE cities;
---TRUNCATE countries;
---TRUNCATE regions;
---TRUNCATE federal_districts;
 
 INSERT INTO federal_districts (name) VALUES
 ('Сибирский'),

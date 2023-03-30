@@ -12,7 +12,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name="regions")
+@Table(name = "regions",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"name", "federal_district_id"}))
 public class Region {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,6 +31,10 @@ public class Region {
     @ToString.Exclude
     private List<City> cities;
 
+    @ManyToOne(fetch = FetchType.LAZY) //***
+    @JoinColumn(name = "country_id")
+    private Country country;
+
     public void addCityToRegion(City city){
         if (cities == null){
             cities = new ArrayList<>();
@@ -43,4 +48,5 @@ public class Region {
     public Region(String name) {
         this.name = name;
     }
+
 }
