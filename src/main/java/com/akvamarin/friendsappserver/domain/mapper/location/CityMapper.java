@@ -25,6 +25,8 @@ public interface CityMapper {
     @BeanMapping(nullValueCheckStrategy = ALWAYS, nullValuePropertyMappingStrategy = IGNORE) //*
     @InheritInverseConfiguration
     @Mapping(target = "id", source = "id", ignore = true)
+    @Mapping(target = "country", ignore = true)
+    @Mapping(target = "users", ignore = true)
     City toEntity(CityDTO cityDTO);
 }
 
