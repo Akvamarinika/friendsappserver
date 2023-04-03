@@ -30,10 +30,15 @@ public abstract class UserMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(source = "roles", target = "authorities", qualifiedByName = "stringToRole")
     @Mapping(target = "city", ignore = true)
+    @Mapping(target = "enabled", ignore = true)
     public abstract User toEntity(UserDTO dto);
 
     @BeanMapping(nullValueCheckStrategy = ALWAYS, nullValuePropertyMappingStrategy = IGNORE)
     @Mapping(target = "authorities", source = "roles", qualifiedByName = "stringToRole")
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "city", ignore = true)
+    @Mapping(target = "enabled", ignore = true)
     public abstract void updateEntity(UserDTO dto, @MappingTarget User user); // @MappingTarget - обновляет переданный объект
 
     //AuthUserSocialDTO
@@ -49,6 +54,11 @@ public abstract class UserMapper {
     @Mapping(target = "psychotype", ignore = true) // *
     @Mapping(target = "urlAvatar", source = "photo")
     @Mapping(target = "city", ignore = true)  // add from city service
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "phone", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "enabled", ignore = true)
     @Mapping(target = "authorities", source = "roles", qualifiedByName = "stringToRole") // default
     public abstract User toEntity(AuthUserSocialDTO socialDTO);
 

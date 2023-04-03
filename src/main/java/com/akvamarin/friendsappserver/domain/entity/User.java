@@ -1,5 +1,6 @@
 package com.akvamarin.friendsappserver.domain.entity;
 
+import com.akvamarin.friendsappserver.domain.entity.event.Event;
 import com.akvamarin.friendsappserver.domain.entity.location.City;
 import com.akvamarin.friendsappserver.domain.enums.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -101,6 +102,9 @@ public class User implements UserDetails {
 
     @Column(name = "vk_id", length = 64)
     private String vkId;
+
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    private List<Event> events;
 
     @Column(nullable = false)
     @Builder.Default

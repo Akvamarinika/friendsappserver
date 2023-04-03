@@ -102,6 +102,15 @@ public class UserServiceImpl implements UserService {
     public User updateUser(@NonNull UserDTO userDTO) {
         return userRepository.findById(userDTO.getId())
                 .map(user -> {
+                    if (userDTO.getPassword() != null){
+                        String hashedPassword = passwordEncoder.encode(userDTO.getPassword());
+                        userDTO.setPassword(hashedPassword);
+                    }
+
+                    City city = cityRepository.findById(userDTO.getCityID())
+                            .orElseThrow(EntityNotFoundException::new);
+
+                    user.setCity(city);
                     userMapper.updateEntity(userDTO, user);
                     return userRepository.save(user);   // обновляет, если такой User есть
                 })
