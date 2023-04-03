@@ -12,7 +12,6 @@ import com.akvamarin.friendsappserver.services.FileService;
 import com.akvamarin.friendsappserver.utils.ExcelHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,14 +51,14 @@ public class FileServiceImpl implements FileService {
                     country = countryRepository.findByName(country.getName())
                             .orElse(countryRepository.save(country));
 
-                    region.setCountry(country);
+                   //region.setCountry(country);
 
-                    region = regionRepository.findByNameAndCountry_Id(region.getName(), country.getId())
+                    region = regionRepository.findByName(region.getName())
                             .orElse(regionRepository.save(region));
 
                     city.setCountry(country);
                     city.setRegion(region);
-                    city.setFederalDistrict(federalDistrict);
+                    //city.setFederalDistrict(federalDistrict);
                 }
 
                 cityRepository.saveAll(cities);

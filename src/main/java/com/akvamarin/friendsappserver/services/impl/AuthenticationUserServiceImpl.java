@@ -1,9 +1,8 @@
 package com.akvamarin.friendsappserver.services.impl;
 
 import com.akvamarin.friendsappserver.domain.dto.*;
+import com.akvamarin.friendsappserver.domain.dto.request.UserDTO;
 import com.akvamarin.friendsappserver.domain.entity.User;
-import com.akvamarin.friendsappserver.domain.mapper.UserMapper;
-import com.akvamarin.friendsappserver.repositories.UserRepository;
 import com.akvamarin.friendsappserver.security.JwtUserDetailsService;
 import com.akvamarin.friendsappserver.security.jwt.JwtTokenProvider;
 import com.akvamarin.friendsappserver.security.social.VkProperties;
@@ -74,7 +73,7 @@ public class AuthenticationUserServiceImpl implements AuthenticationUserService 
 
         log.info("Method *** authOAuth2 *** : checkTokenVkResponse = {} ", checkTokenVkResponse);
         if (checkTokenVkResponse.getSuccess() == 1) {
-            userService.createNewUserVK(userSocialDTO);
+            userService.createNewUserVKontakte(userSocialDTO);
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(userSocialDTO.getUsername());
             Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails,

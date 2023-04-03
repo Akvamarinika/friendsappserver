@@ -1,6 +1,6 @@
 package com.akvamarin.friendsappserver.security.jwt;
 
-import com.akvamarin.friendsappserver.domain.dto.responseerror.ErrorDescription;
+import com.akvamarin.friendsappserver.domain.dto.error.ErrorDescription;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,7 +15,6 @@ import java.io.IOException;
 
 /**
  * Используется для отправки ответа HTTP.
- *
  * Если пользователь неавторизован, но пытается получить доступ к частным ресурсам.
  **/
 

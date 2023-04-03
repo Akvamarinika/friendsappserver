@@ -25,6 +25,10 @@ public class FederalDistrict {
     @ToString.Exclude
     private Set<Region> regions;
 
+    @ManyToOne(fetch = FetchType.LAZY) //***
+    @JoinColumn(name = "country_id")
+    private Country country;
+
     public void addRegionToFederalDistrict(Region region){
         if (regions == null){
             regions = new HashSet<>();

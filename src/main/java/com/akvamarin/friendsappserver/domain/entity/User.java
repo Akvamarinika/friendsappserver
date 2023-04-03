@@ -82,9 +82,10 @@ public class User implements UserDetails {
     //целевые объекты нельзя выбирать, сохранять, мержить напрямую, не зависимо от родительского объекта
     //Значения ElementCollection всегда хранятся в отдельных таблицах
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
-    @CollectionTable//(name="e_role", joinColumns=@JoinColumn(name="role_id"))
+    @CollectionTable//(name = "authorities", joinColumns = @JoinColumn(name = "user_id"))
     @Builder.Default
     @Enumerated(EnumType.STRING)
+    //@Column(name = "role")
     private Collection<Role> authorities = List.of(Role.USER);
 
     @CreatedDate

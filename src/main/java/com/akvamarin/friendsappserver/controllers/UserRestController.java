@@ -1,10 +1,11 @@
 package com.akvamarin.friendsappserver.controllers;
 
+import com.akvamarin.friendsappserver.domain.dto.response.ViewUserDTO;
 import com.akvamarin.friendsappserver.services.UserService;
-import com.akvamarin.friendsappserver.domain.dto.UserDTO;
+import com.akvamarin.friendsappserver.domain.dto.request.UserDTO;
 import com.akvamarin.friendsappserver.domain.entity.User;
-import com.akvamarin.friendsappserver.domain.dto.responseerror.ErrorResponse;
-import com.akvamarin.friendsappserver.domain.dto.responseerror.ValidationErrorResponse;
+import com.akvamarin.friendsappserver.domain.dto.error.ErrorResponse;
+import com.akvamarin.friendsappserver.domain.dto.error.ValidationErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -56,7 +57,7 @@ public class UserRestController {
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserDTO.class))))
     )
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<UserDTO> getAllUsers() {
+    public List<ViewUserDTO> getAllUsers() {
         return userService.findAll();
     }
 
@@ -68,7 +69,7 @@ public class UserRestController {
             }
     )
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDTO getUserByID(@PathVariable Long id) {
+    public ViewUserDTO getUserByID(@PathVariable Long id) {
         return userService.findById(id);
     }
 

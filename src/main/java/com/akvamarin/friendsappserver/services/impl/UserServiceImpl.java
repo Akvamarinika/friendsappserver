@@ -1,10 +1,12 @@
 package com.akvamarin.friendsappserver.services.impl;
 import com.akvamarin.friendsappserver.domain.dto.AuthUserSocialDTO;
+import com.akvamarin.friendsappserver.domain.dto.response.ViewUserDTO;
 import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.domain.entity.location.City;
 import com.akvamarin.friendsappserver.repositories.UserRepository;
-import com.akvamarin.friendsappserver.domain.dto.UserDTO;
+import com.akvamarin.friendsappserver.domain.dto.request.UserDTO;
 import com.akvamarin.friendsappserver.domain.mapper.UserMapper;
+import com.akvamarin.friendsappserver.repositories.location.CityRepository;
 import com.akvamarin.friendsappserver.services.CityService;
 import com.akvamarin.friendsappserver.services.UserService;
 import lombok.NonNull;
@@ -18,36 +20,28 @@ import javax.persistence.EntityNotFoundException;
 import javax.validation.ValidationException;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-//BCrypt.hashpw(userDTO.getPassword(), BCrypt.gensalt());
+
 
 @Slf4j
 @Service
-@RequiredArgsConstructor    //конструктор с 1 параметром для каждого поля
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final CityService cityService;
+    private final CityRepository cityRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    //ВК регист-ия
+    //ВК сохраненение данных польз-ля, если их нет в БД
     @Transactional
     @Override
-    public User createNewUserVK(@NotNull AuthUserSocialDTO userSocialDTO) throws ValidationException {
-        boolean isUserFromDBDuplicateEmailOrVkId = userRepository.findByEmailOrVkId(
-                userSocialDTO.getEmail(), userSocialDTO.getVkId()).isPresent();
+    public User createNewUserVKontakte(@NotNull AuthUserSocialDTO userSocialDTO) {
+        Optional<User> userOptional = userRepository.findByVkId(userSocialDTO.getVkId());
 
-        //TODO: определить точно: дубликат почты или ВК uuid
-      /*  if (isUserFromDBDuplicateEmailOrVkId) {
-            if (userSocialDTO.getVkId() != null) {
-                throw new ValidationException("VK ID already registered!");
-            } else if (userSocialDTO.getEmail() != null) {
-                throw new ValidationException("Email already registered!");
-            }
-        }*/
-
-        if (isUserFromDBDuplicateEmailOrVkId) {
-            throw new ValidationException("VK ID or Email already registered!");
+        if (userOptional.isPresent()) {
+            return userOptional.get();
         }
 
         City city = cityService.findCityIfNoCreateNew(userSocialDTO.getCity(), userSocialDTO.getCountry());
@@ -55,7 +49,7 @@ public class UserServiceImpl implements UserService {
         user.setCity(city);
         user.setEnabled(true);
 
-        return userRepository.save(user); //return User from DB
+        return userRepository.save(user);
     }
 
     //обычная регист-ия
@@ -69,11 +63,15 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = userMapper.toEntity(userDTO);
+        City city = cityRepository.findById(userDTO.getCityID())
+                .orElseThrow(EntityNotFoundException::new);
+
         if (userDTO.getPassword() != null){
             String hashedPassword = passwordEncoder.encode(userDTO.getPassword());
             user.setPassword(hashedPassword);
         }
 
+        user.setCity(city);
         user.setEnabled(true);
 
         return userRepository.save(user); //return User from DB
@@ -81,8 +79,8 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public List<UserDTO> findAll() {
-        List<UserDTO> result = userRepository.findAll().stream()
+    public List<ViewUserDTO> findAll() {
+        List<ViewUserDTO> result = userRepository.findAll().stream()
                 .map(userMapper::toDTO)
                 .collect(Collectors.toList());
         log.info("Method *** findAll *** : UserDTO list size = {}", result.size());
@@ -91,8 +89,8 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDTO findById(long userID) {
-        UserDTO result =  userRepository.findById(userID)
+    public ViewUserDTO findById(long userID) {
+        ViewUserDTO result =  userRepository.findById(userID)
                 .map(userMapper::toDTO)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("User with ID %d not found", userID)));
         log.info("Method *** findById *** : UserDTO = {} UserID = {}", result, userID);
@@ -120,6 +118,34 @@ public class UserServiceImpl implements UserService {
                 }).orElseThrow(EntityNotFoundException::new);
         log.info("Method *** deleteById *** : isDeletedUser = {} with ID = {}", isDeletedUser, id);
         return isDeletedUser;
+    }
+
+
+    @Transactional
+    @Override
+    public User createNewUserVK(@NotNull AuthUserSocialDTO userSocialDTO) throws ValidationException {
+        boolean isUserFromDBDuplicateEmailOrVkId = userRepository.findByEmailOrVkId(
+                userSocialDTO.getEmail(), userSocialDTO.getVkId()).isPresent();
+
+        //TODO: определить точно: дубликат почты или ВК uuid
+      /*  if (isUserFromDBDuplicateEmailOrVkId) {
+            if (userSocialDTO.getVkId() != null) {
+                throw new ValidationException("VK ID already registered!");
+            } else if (userSocialDTO.getEmail() != null) {
+                throw new ValidationException("Email already registered!");
+            }
+        }*/
+
+        if (isUserFromDBDuplicateEmailOrVkId) {
+            throw new ValidationException("VK ID or Email already registered!");
+        }
+
+        City city = cityService.findCityIfNoCreateNew(userSocialDTO.getCity(), userSocialDTO.getCountry());
+        User user = userMapper.toEntity(userSocialDTO);
+        user.setCity(city);
+        user.setEnabled(true);
+
+        return userRepository.save(user); //return User from DB
     }
 
 }

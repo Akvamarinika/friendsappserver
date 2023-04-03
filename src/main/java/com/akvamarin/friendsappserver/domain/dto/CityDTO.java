@@ -1,15 +1,12 @@
 package com.akvamarin.friendsappserver.domain.dto;
 
-import com.akvamarin.friendsappserver.domain.entity.location.Country;
-import com.akvamarin.friendsappserver.domain.entity.location.Region;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.jackson.Jacksonized;
 
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 @Builder
@@ -22,11 +19,23 @@ public class CityDTO implements Serializable {
 
     @NotBlank
     private String name;
+
     private double lat;
+
     private double lon;
+
+    private Long federalDistrictID;
+
+    private String federalDistrictName;
+
     private Long regionID;
 
+    private String regionName;
+
     @NotBlank
-    private Long  countryID;
+    private Long countryID;
+
+
+    private String countryName;
 
 }

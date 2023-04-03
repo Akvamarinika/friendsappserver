@@ -1,8 +1,6 @@
 package com.akvamarin.friendsappserver.domain.mapper.location;
 
 import com.akvamarin.friendsappserver.domain.dto.CityDTO;
-import com.akvamarin.friendsappserver.domain.dto.UserDTO;
-import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.domain.entity.location.City;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.InheritInverseConfiguration;
@@ -24,7 +22,7 @@ public interface CityMapper {
     @Mapping(target = "countryName", source = "region.federalDistrict.country.name")
     CityDTO toDTO(City city);
 
-    @BeanMapping(nullValueCheckStrategy = ALWAYS, nullValuePropertyMappingStrategy = IGNORE)
+    @BeanMapping(nullValueCheckStrategy = ALWAYS, nullValuePropertyMappingStrategy = IGNORE) //*
     @InheritInverseConfiguration
     @Mapping(target = "id", source = "id", ignore = true)
     City toEntity(CityDTO cityDTO);

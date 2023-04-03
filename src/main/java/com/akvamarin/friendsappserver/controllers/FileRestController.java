@@ -1,6 +1,6 @@
 package com.akvamarin.friendsappserver.controllers;
 
-import com.akvamarin.friendsappserver.domain.dto.responseerror.ValidationErrorResponse;
+import com.akvamarin.friendsappserver.domain.dto.error.ValidationErrorResponse;
 import com.akvamarin.friendsappserver.services.FileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

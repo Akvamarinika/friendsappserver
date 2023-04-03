@@ -1,8 +1,8 @@
 package com.akvamarin.friendsappserver.unittest;
 
-import com.akvamarin.friendsappserver.domain.dto.EventDTO;
+import com.akvamarin.friendsappserver.domain.dto.request.EventDTO;
 import com.akvamarin.friendsappserver.domain.entity.event.Event;
-import com.akvamarin.friendsappserver.domain.mapper.EventMapper;
+import com.akvamarin.friendsappserver.domain.mapper.event.EventMapper;
 import com.akvamarin.friendsappserver.repositories.EventRepository;
 import com.akvamarin.friendsappserver.services.impl.EventServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -11,8 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.ConstraintViolationException;

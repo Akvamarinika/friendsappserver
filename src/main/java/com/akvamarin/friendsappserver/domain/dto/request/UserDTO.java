@@ -1,4 +1,4 @@
-package com.akvamarin.friendsappserver.domain.dto;
+package com.akvamarin.friendsappserver.domain.dto.request;
 
 import com.akvamarin.friendsappserver.domain.enums.Alcohol;
 import com.akvamarin.friendsappserver.domain.enums.Psychotype;
@@ -63,9 +63,8 @@ public class UserDTO implements Serializable {
     @NotBlank(message = "URL avatar cannot be blank")
     private String urlAvatar;
 
-    private long cityId;
-
-    private long countryId;
+    private Long cityID;
+    //private CityDTO cityDTO;
 
     private Set<String> roles;
 

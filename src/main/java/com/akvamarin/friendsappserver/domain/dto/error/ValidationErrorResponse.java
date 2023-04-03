@@ -1,4 +1,4 @@
-package com.akvamarin.friendsappserver.domain.dto.responseerror;
+package com.akvamarin.friendsappserver.domain.dto.error;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

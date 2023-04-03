@@ -1,7 +1,8 @@
 package com.akvamarin.friendsappserver.unittest;
 
 import com.akvamarin.friendsappserver.domain.dto.AuthUserSocialDTO;
-import com.akvamarin.friendsappserver.domain.dto.UserDTO;
+import com.akvamarin.friendsappserver.domain.dto.request.UserDTO;
+import com.akvamarin.friendsappserver.domain.dto.response.ViewUserDTO;
 import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.domain.entity.location.City;
 import com.akvamarin.friendsappserver.domain.entity.location.Country;
@@ -232,17 +233,17 @@ class UserServiceTest {
 
 		List<User> userList = Arrays.asList(user1, user2);
 
-		UserDTO userDto1 = UserDTO.builder()
+		ViewUserDTO userDto1 = ViewUserDTO.builder()
 				.id(1L)
 				.nickname("user1")
 				.build();
 
-		UserDTO userDto2 = UserDTO.builder()
+		ViewUserDTO userDto2 = ViewUserDTO.builder()
 				.id(2L)
 				.nickname("user2")
 				.build();
 
-		List<UserDTO> expectedList = Arrays.asList(userDto1, userDto2);
+		List<ViewUserDTO> expectedList = Arrays.asList(userDto1, userDto2);
 
 		Mockito.when(userRepository.findAll())
 				.thenReturn(userList);
@@ -254,7 +255,7 @@ class UserServiceTest {
 				.thenReturn(userDto2);
 
 		// when
-		List<UserDTO> actualList = userService.findAll();
+		List<ViewUserDTO> actualList = userService.findAll();
 
 		// then
 		Assertions.assertEquals(expectedList.size(), actualList.size());
@@ -283,7 +284,7 @@ class UserServiceTest {
 		user.setId(userId);
 		user.setNickname("test_user");
 
-		UserDTO expectedDto = new UserDTO();
+		ViewUserDTO expectedDto = new ViewUserDTO();
 		expectedDto.setId(userId);
 		expectedDto.setNickname("test_user");
 
@@ -291,7 +292,7 @@ class UserServiceTest {
 		Mockito.when(userMapper.toDTO(user)).thenReturn(expectedDto);
 
 		// when
-		UserDTO actualDto = userService.findById(userId);
+		ViewUserDTO actualDto = userService.findById(userId);
 
 		// then
 		assertThat(actualDto).isEqualTo(expectedDto);

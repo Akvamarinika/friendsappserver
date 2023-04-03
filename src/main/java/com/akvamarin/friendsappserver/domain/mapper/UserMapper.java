@@ -1,9 +1,11 @@
 package com.akvamarin.friendsappserver.domain.mapper;
 
 import com.akvamarin.friendsappserver.domain.dto.AuthUserSocialDTO;
-import com.akvamarin.friendsappserver.domain.dto.UserDTO;
+import com.akvamarin.friendsappserver.domain.dto.request.UserDTO;
+import com.akvamarin.friendsappserver.domain.dto.response.ViewUserDTO;
 import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.domain.enums.Role;
+import com.akvamarin.friendsappserver.domain.mapper.location.CityMapper;
 import org.mapstruct.*;
 
 import java.util.Collections;
@@ -13,21 +15,21 @@ import static java.util.stream.Collectors.toSet;
 import static org.mapstruct.NullValueCheckStrategy.ALWAYS;
 import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {CityMapper.class})
 public abstract class UserMapper {
 
     @BeanMapping(nullValueCheckStrategy = ALWAYS, nullValuePropertyMappingStrategy = IGNORE)
-    @Mapping(target = "password", ignore = true)
     @Mapping(target = "roles", source = "authorities")
-    public abstract UserDTO toDTO(User user);
+    @Mapping(target = "cityDTO", source = "city")
+    public abstract ViewUserDTO toDTO(User user);
 
-    @InheritInverseConfiguration
     @BeanMapping(nullValueCheckStrategy = ALWAYS, nullValuePropertyMappingStrategy = IGNORE)
     @Mapping(target = "password", source = "password", ignore = true)
     @Mapping(target = "id", source = "id", ignore = true)   //No ID, when registering
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(source = "roles", target = "authorities", qualifiedByName = "stringToRole")
+    @Mapping(target = "city", ignore = true)
     public abstract User toEntity(UserDTO dto);
 
     @BeanMapping(nullValueCheckStrategy = ALWAYS, nullValuePropertyMappingStrategy = IGNORE)
@@ -50,9 +52,9 @@ public abstract class UserMapper {
     @Mapping(target = "authorities", source = "roles", qualifiedByName = "stringToRole") // default
     public abstract User toEntity(AuthUserSocialDTO socialDTO);
 
-    @Mapping(target = "authorities", source = "roles", qualifiedByName = "stringToRole")
+    /* @Mapping(target = "authorities", source = "roles", qualifiedByName = "stringToRole")
     @Mapping(target = "city", ignore = true)  // add from city service
-    public abstract void updateEntity(AuthUserSocialDTO socialDTO, @MappingTarget User user); // @MappingTarget - обновляет переданный объект
+    public abstract void updateEntity(AuthUserSocialDTO socialDTO, @MappingTarget User user); */
 
     @Named("stringToRole")
     protected Set<Role> stringToRole(Set<String> authorities) {

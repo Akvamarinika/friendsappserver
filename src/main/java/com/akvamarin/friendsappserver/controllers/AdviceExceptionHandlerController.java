@@ -1,8 +1,8 @@
 package com.akvamarin.friendsappserver.controllers;
 
-import com.akvamarin.friendsappserver.domain.dto.responseerror.ErrorDescription;
-import com.akvamarin.friendsappserver.domain.dto.responseerror.ErrorResponse;
-import com.akvamarin.friendsappserver.domain.dto.responseerror.ValidationErrorResponse;
+import com.akvamarin.friendsappserver.domain.dto.error.ErrorDescription;
+import com.akvamarin.friendsappserver.domain.dto.error.ErrorResponse;
+import com.akvamarin.friendsappserver.domain.dto.error.ValidationErrorResponse;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;

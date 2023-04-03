@@ -21,7 +21,7 @@ public class Region {
 
     private String name;
 
-    //cascade = {CascadeType.ALL},
+
     @ManyToOne//( fetch = FetchType.EAGER)
     //@MapsId
     @JoinColumn(name = "federal_district_id", referencedColumnName = "id")
@@ -30,10 +30,6 @@ public class Region {
     @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "region", fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<City> cities;
-
-    @ManyToOne(fetch = FetchType.LAZY) //***
-    @JoinColumn(name = "country_id")
-    private Country country;
 
     public void addCityToRegion(City city){
         if (cities == null){
