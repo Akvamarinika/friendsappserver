@@ -124,7 +124,7 @@ public class UserServiceImpl implements UserService {
                 .map(user -> {
                     userRepository.deleteById(user.getId());
                     return true;
-                }).orElseThrow(EntityNotFoundException::new);
+                }).orElseThrow(() -> new EntityNotFoundException("User with ID " + id + " not found"));
         log.info("Method *** deleteById *** : isDeletedUser = {} with ID = {}", isDeletedUser, id);
         return isDeletedUser;
     }

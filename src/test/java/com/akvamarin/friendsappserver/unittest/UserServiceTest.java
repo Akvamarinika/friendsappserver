@@ -10,6 +10,7 @@ import com.akvamarin.friendsappserver.domain.enums.Role;
 import com.akvamarin.friendsappserver.domain.enums.Sex;
 import com.akvamarin.friendsappserver.domain.mapper.UserMapper;
 import com.akvamarin.friendsappserver.repositories.UserRepository;
+import com.akvamarin.friendsappserver.repositories.location.CityRepository;
 import com.akvamarin.friendsappserver.services.CityService;
 import com.akvamarin.friendsappserver.services.UserService;
 import com.akvamarin.friendsappserver.services.impl.UserServiceImpl;
@@ -45,6 +46,9 @@ class UserServiceTest {
 	private UserRepository userRepository;
 
 	@Mock
+	private CityRepository cityRepository;
+
+	@Mock
 	private UserMapper userMapper;
 
 	@Mock
@@ -63,13 +67,13 @@ class UserServiceTest {
 	 */
 	@Test
 	void createNewUser_withNonExistingEmail_shouldCreateUser() throws ValidationException {
-		// given
 		UserDTO userDTO = new UserDTO();
 		userDTO.setUsername("user@example.com");
 		userDTO.setEmail("user@example.com");
 		userDTO.setPassword("password");
 		userDTO.setDateOfBirthday(LocalDate.parse("2000-01-02"));
 		userDTO.setNickname("user");
+		userDTO.setCityID(1L);
 
 		User user = new User();
 		user.setUsername(userDTO.getUsername());
@@ -77,6 +81,21 @@ class UserServiceTest {
 		user.setPassword(userDTO.getPassword());
 		user.setDateOfBirthday(userDTO.getDateOfBirthday());
 		user.setNickname(userDTO.getNickname());
+
+		Country country = Country.builder()
+				.id(1L)
+				.name("Country")
+				.build();
+
+		City city = City.builder()
+				.id(1L)
+				.name("City")
+				.country(country)
+				.build();
+
+		user.setCity(city);
+
+		when(cityRepository.findById(userDTO.getCityID())).thenReturn(Optional.of(city));
 
 		Mockito.when(userRepository.findByEmail(userDTO.getEmail()))
 				.thenReturn(Optional.empty());
@@ -90,10 +109,10 @@ class UserServiceTest {
 		Mockito.when(userRepository.save(user))
 				.thenReturn(user);
 
-		// when
+		// Actual
 		User result = userService.createNewUser(userDTO);
 
-		// then
+		// Asserts
 		Assertions.assertNotNull(result);
 		Assertions.assertEquals(user.getEmail(), result.getEmail());
 		Assertions.assertEquals(user.getPassword(), result.getPassword());
@@ -107,7 +126,6 @@ class UserServiceTest {
 
 	@Test
 	void createNewUser_withExistingEmail_shouldThrowValidationException() {
-		// given
 		UserDTO userDTO = new UserDTO();
 		userDTO.setUsername("user@example.com");
 		userDTO.setEmail("user@example.com");
@@ -118,10 +136,13 @@ class UserServiceTest {
 		Mockito.when(userRepository.findByEmail(userDTO.getEmail()))
 				.thenReturn(Optional.of(new User()));
 
-		// when, then
+		// Asserts
 		Assertions.assertThrows(ValidationException.class, () -> userService.createNewUser(userDTO));
 
 		Mockito.verify(userRepository, Mockito.times(1)).findByEmail(userDTO.getEmail());
+		Mockito.verify(userMapper, Mockito.never()).toEntity(userDTO);
+		Mockito.verify(passwordEncoder, Mockito.never()).encode(userDTO.getPassword());
+		Mockito.verify(userRepository, Mockito.never()).save(Mockito.any(User.class));
 	}
 
 	/**
@@ -130,7 +151,6 @@ class UserServiceTest {
 	 */
 	@Test
 	void createNewUserVK_withNonExistingVkIdOrEmail_shouldCreateUser() throws ValidationException {
-		// given
 		AuthUserSocialDTO userDTO = AuthUserSocialDTO.builder()
 				.username("vk@example.com")
 				.email("vk@example.com")
@@ -174,10 +194,10 @@ class UserServiceTest {
 		Mockito.when(userRepository.save(user))
 				.thenReturn(user);
 
-		// when
+		// Actual
 		User result = userService.createNewUserVK(userDTO);
 
-		// then
+		// Asserts
 		Assertions.assertNotNull(result);
 		Assertions.assertEquals(user.getEmail(), result.getEmail());
 		Assertions.assertEquals(user.getVkId(), result.getVkId());
@@ -192,7 +212,6 @@ class UserServiceTest {
 
 	@Test
 	void createNewUserVK_withExistingVkId_shouldThrowValidationException() {
-		// given
 		AuthUserSocialDTO userDTO = AuthUserSocialDTO.builder()
 				.username("vk@example.com")
 				.email("vk@example.com")
@@ -208,10 +227,12 @@ class UserServiceTest {
 		Mockito.when(userRepository.findByEmailOrVkId(userDTO.getEmail(), userDTO.getVkId()))
 				.thenReturn(Optional.of(new User()));
 
-		// when, then
+		// Asserts
 		Assertions.assertThrows(ValidationException.class, () -> userService.createNewUserVK(userDTO));
 
 		Mockito.verify(userRepository, Mockito.times(1)).findByEmailOrVkId(userDTO.getEmail(), userDTO.getVkId());
+		Mockito.verify(userMapper, Mockito.never()).toEntity(userDTO);
+		Mockito.verify(userRepository, Mockito.never()).save(Mockito.any(User.class));
 	}
 
 	/**
@@ -220,7 +241,6 @@ class UserServiceTest {
 	 */
 	@Test
 	void findAll_shouldReturnListOfUserDTOs() {
-		// given
 		User user1 = User.builder()
 				.id(1L)
 				.nickname("user1")
@@ -254,10 +274,10 @@ class UserServiceTest {
 		Mockito.when(userMapper.toDTO(user2))
 				.thenReturn(userDto2);
 
-		// when
+		// Actual
 		List<ViewUserDTO> actualList = userService.findAll();
 
-		// then
+		// Asserts
 		Assertions.assertEquals(expectedList.size(), actualList.size());
 		Assertions.assertEquals(expectedList.get(0).getId(), actualList.get(0).getId());
 		Assertions.assertEquals(expectedList.get(0).getNickname(), actualList.get(0).getNickname());
@@ -277,7 +297,6 @@ class UserServiceTest {
 	 */
 	@Test
 	void findById_shouldReturnUserDTO_whenUserExists() {
-		// given
 		long userId = 1L;
 
 		User user = new User();
@@ -291,10 +310,10 @@ class UserServiceTest {
 		Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 		Mockito.when(userMapper.toDTO(user)).thenReturn(expectedDto);
 
-		// when
+		// Actual
 		ViewUserDTO actualDto = userService.findById(userId);
 
-		// then
+		// Asserts
 		assertThat(actualDto).isEqualTo(expectedDto);
 		Mockito.verify(userRepository).findById(userId);
 		Mockito.verify(userMapper).toDTO(user);
@@ -302,11 +321,10 @@ class UserServiceTest {
 
 	@Test
 	void findById_shouldThrowEntityNotFoundException_whenUserDoesNotExist() {
-		// given
 		long userId = 1L;
 		Mockito.when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
-		// when, then
+		// Asserts
 		assertThatThrownBy(() -> userService.findById(userId))
 				.isInstanceOf(EntityNotFoundException.class)
 				.hasMessage("User with ID 1 not found");
@@ -319,14 +337,29 @@ class UserServiceTest {
 	 */
 	@Test
 	void updateUser_shouldUpdateUserAndReturnUpdatedUser() {
-		// given
 		UserDTO userDTO = new UserDTO();
 		userDTO.setId(1L);
 		userDTO.setNickname("updatedNickname");
+		userDTO.setCityID(1L);
 
 		User existingUser = new User();
 		existingUser.setId(1L);
 		existingUser.setNickname("oldNickname");
+
+		Country country = Country.builder()
+				.id(1L)
+				.name("Country")
+				.build();
+
+		City city = City.builder()
+				.id(1L)
+				.name("City")
+				.country(country)
+				.build();
+
+		existingUser.setCity(city);
+
+		when(cityRepository.findById(1L)).thenReturn(Optional.of(city));
 
 		Mockito.when(userRepository.findById(userDTO.getId()))
 				.thenReturn(Optional.of(existingUser));
@@ -344,10 +377,10 @@ class UserServiceTest {
 		Mockito.when(userRepository.save(existingUser))
 				.thenReturn(existingUser);
 
-		// when
+		// Actual
 		User result = userService.updateUser(userDTO);
 
-		// then
+		// Asserts
 		assertEquals(existingUser, result);
 		assertEquals(userDTO.getNickname(), existingUser.getNickname());
 		Mockito.verify(userRepository).findById(userDTO.getId());
@@ -362,14 +395,13 @@ class UserServiceTest {
 	 */
 	@Test
 	void updateUser_shouldThrowEntityNotFoundExceptionIfUserNotFound() {
-		// given
 		UserDTO userDTO = new UserDTO();
 		userDTO.setId(1L);
 		userDTO.setNickname("updatedNickname");
 
 		when(userRepository.findById(userDTO.getId())).thenReturn(java.util.Optional.empty());
 
-		// when, then
+		// Asserts
 		assertThrows(EntityNotFoundException.class, () -> userService.updateUser(userDTO));
 		verify(userRepository, times(1)).findById(userDTO.getId());
 		verifyNoMoreInteractions(userRepository, userMapper, passwordEncoder);
@@ -382,28 +414,25 @@ class UserServiceTest {
 	 * */
 	@Test
 	void deleteById_shouldDeleteExistingUserAndReturnTrue() {
-		// given
 		User user = new User();
 		user.setId(1L);
 
 		Mockito.when(userRepository.findById(1L))
 				.thenReturn(Optional.of(user));
 
-		// when
+		// Actual
 		boolean isDeleted = userService.deleteById(1L);
 
-		// then
+		// Asserts
 		assertTrue(isDeleted);
 		Mockito.verify(userRepository, Mockito.times(1)).deleteById(1L);
 	}
 
 	@Test
 	void deleteById_shouldThrowEntityNotFoundExceptionForNonExistingUser() {
-		// given
 		Mockito.when(userRepository.findById(1L))
 				.thenReturn(Optional.empty());
 
-		// when, then
 		EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> userService.deleteById(1L));
 		assertEquals("User with ID 1 not found", ex.getMessage());
 	}
