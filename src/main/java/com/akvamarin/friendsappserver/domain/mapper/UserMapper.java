@@ -3,6 +3,7 @@ package com.akvamarin.friendsappserver.domain.mapper;
 import com.akvamarin.friendsappserver.domain.dto.AuthUserSocialDTO;
 import com.akvamarin.friendsappserver.domain.dto.request.UserDTO;
 import com.akvamarin.friendsappserver.domain.dto.response.ViewUserDTO;
+import com.akvamarin.friendsappserver.domain.dto.response.ViewUserSlimDTO;
 import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.domain.enums.Role;
 import com.akvamarin.friendsappserver.domain.mapper.location.CityMapper;
@@ -65,6 +66,9 @@ public abstract class UserMapper {
     /* @Mapping(target = "authorities", source = "roles", qualifiedByName = "stringToRole")
     @Mapping(target = "city", ignore = true)  // add from city service
     public abstract void updateEntity(AuthUserSocialDTO socialDTO, @MappingTarget User user); */
+
+    @BeanMapping(nullValueCheckStrategy = ALWAYS, nullValuePropertyMappingStrategy = IGNORE)
+    public abstract ViewUserSlimDTO userToViewUserSlimDTO(User user);
 
     @Named("stringToRole")
     protected Set<Role> stringToRole(Set<String> authorities) {
