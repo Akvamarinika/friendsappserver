@@ -63,8 +63,12 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = userMapper.toEntity(userDTO);
-        City city = cityRepository.findById(userDTO.getCityID())
-                .orElseThrow(EntityNotFoundException::new);
+
+        City city = null;
+        if (userDTO.getCityID() != null) {
+            city = cityRepository.findById(userDTO.getCityID())
+                    .orElseThrow(EntityNotFoundException::new);
+        }
 
         if (userDTO.getPassword() != null){
             String hashedPassword = passwordEncoder.encode(userDTO.getPassword());
