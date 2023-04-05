@@ -20,9 +20,9 @@ public class CityDTO implements Serializable {
     @NotBlank
     private String name;
 
-    private double lat;
+    private Double lat;
 
-    private double lon;
+    private Double lon;
 
     private Long federalDistrictID;
 
