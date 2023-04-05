@@ -1,0 +1,27 @@
+{
+  "name": "Name for event",
+  "description": "my good event",
+  "date": "2023-04-05",
+  "periodOfTime": "EVENING",
+  "partner": "ANY",
+  "eventCategoryId": 2,
+  "ownerId": 1,
+  "lat": 100.52,
+  "lon": 150.1
+}
+
+//for upd:
+{
+  "id": 11,
+  "name": "NEW Name for event",
+  "description": "my good event",
+  "date": "2023-04-05",
+  "periodOfTime": "EVENING",
+  "partner": "MAN",
+  "eventCategoryId": 3,
+  "ownerId": 1,
+  "lat": 555.55,
+  "lon": 111.111
+}
+
+

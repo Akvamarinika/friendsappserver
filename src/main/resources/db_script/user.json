@@ -1,0 +1,90 @@
+//create
+
+{
+  "email": "jane@exampleee.com",
+  "username": "jane@exampleee.com",
+  "phone": "89505552000",
+  "password": "mypass",
+  "dateOfBirthday": "1995-05-05",
+  "nickname": "Jane",
+  "sex": "FEMALE",
+  "aboutMe": "Hi, I am Jane.",
+  "smoking": "NO",
+  "alcohol": null,
+  "psychotype": "EXTROVERT",
+  "urlAvatar": "https://meragor.com/files/styles//ava_800_800_wm/_5_5.jpg",
+  "cityID": 2,
+  "roles": [
+    "USER"
+  ],
+  "vkId": null
+}
+
+
+// xz
+
+{
+  "email": "jane@exampleee.com",
+  "username": "jane@exampleee.com",
+  "phone": "89505552000",
+  "password": "mypass",
+  "dateOfBirthday": "1995-05-05",
+  "nickname": "Jane",
+  "sex": "FEMALE",
+  "aboutMe": "Hi, I am Jane.",
+  "smoking": "NO",
+  "alcohol": null,
+  "psychotype": "EXTROVERT",
+  "urlAvatar": "https://meragor.com/files/styles//ava_800_800_wm/_5_5.jpg",
+  "cityDTO": {
+    "id": 2,
+    "name": "Красноярск",
+    "lat": 123.123,
+    "lon": 145.236,
+    "federalDistrictID": 1,
+    "federalDistrictName": "Сибирский",
+    "regionID": 3,
+    "regionName": "Красноярский край",
+    "countryID": 1,
+    "countryName": "Россия"
+  },
+  "roles": [
+    "USER"
+  ],
+  "vkId": null
+}
+
+
+//upd
+
+{
+  "id": 2,
+  "email": "jane@example.com",
+  "username": "jane",
+  "phone": "89505552345",
+  "password": null,
+  "dateOfBirthday": "1995-05-05",
+  "nickname": "Jane",
+  "sex": "FEMALE",
+  "aboutMe": "Hi, I am Jane.",
+  "smoking": "NO",
+  "alcohol": "NO_ANSWER",
+  "psychotype": "EXTROVERT",
+  "urlAvatar": "https://meragor.com/files/styles//ava_800_800_wm/_5_5.jpg",
+  "cityDTO": {
+    "id": 2,
+    "name": "Красноярск",
+    "lat": 123.123,
+    "lon": 145.236,
+    "federalDistrictID": 1,
+    "federalDistrictName": "Сибирский",
+    "regionID": 3,
+    "regionName": "Красноярский край",
+    "countryID": 1,
+    "countryName": "Россия"
+  },
+  "roles": [
+    "USER"
+  ],
+  "vkId": null
+}
