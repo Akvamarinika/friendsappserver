@@ -2,7 +2,7 @@ package com.akvamarin.friendsappserver.services.impl;
 
 import com.akvamarin.friendsappserver.domain.dto.EventCategoryDTO;
 import com.akvamarin.friendsappserver.domain.entity.event.EventCategory;
-import com.akvamarin.friendsappserver.domain.mapper.EventCategoryMapper;
+import com.akvamarin.friendsappserver.domain.mapper.event.EventCategoryMapper;
 import com.akvamarin.friendsappserver.repositories.EventCategoryRepository;
 import com.akvamarin.friendsappserver.services.EventCategoryService;
 import lombok.NonNull;

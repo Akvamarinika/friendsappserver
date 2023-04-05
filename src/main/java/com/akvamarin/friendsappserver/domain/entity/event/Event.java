@@ -26,8 +26,11 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
+
     private String description;
+
     private LocalDate date;
 
     @Column(name = "e_period_of_time")
@@ -53,4 +56,8 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User user;
+
+    private Double lat;
+
+    private Double lon;
 }

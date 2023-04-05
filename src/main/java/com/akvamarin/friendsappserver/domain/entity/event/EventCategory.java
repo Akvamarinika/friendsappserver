@@ -24,6 +24,6 @@ public class EventCategory {
     @Column(name = "url_icon")
     private String UrlIcon;
 
-    @OneToMany(mappedBy = "eventCategory")
+    @OneToMany(mappedBy = "user")
     private List<Event> events;
 }

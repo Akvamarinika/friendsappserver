@@ -1,8 +1,8 @@
 package com.akvamarin.friendsappserver.controllers;
 
 import com.akvamarin.friendsappserver.domain.dto.EventCategoryDTO;
-import com.akvamarin.friendsappserver.domain.dto.responseerror.ErrorResponse;
-import com.akvamarin.friendsappserver.domain.dto.responseerror.ValidationErrorResponse;
+import com.akvamarin.friendsappserver.domain.dto.error.ErrorResponse;
+import com.akvamarin.friendsappserver.domain.dto.error.ValidationErrorResponse;
 import com.akvamarin.friendsappserver.services.EventCategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -22,7 +22,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/eventCategories")
+@RequestMapping("/api/v1/categories")
 @RequiredArgsConstructor
 @Slf4j
 public class EventCategoryController {

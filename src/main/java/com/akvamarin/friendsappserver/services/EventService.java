@@ -1,6 +1,8 @@
 package com.akvamarin.friendsappserver.services;
 
-import com.akvamarin.friendsappserver.domain.dto.EventDTO;
+import com.akvamarin.friendsappserver.domain.dto.request.EventDTO;
+import com.akvamarin.friendsappserver.domain.dto.response.ViewEventDTO;
+import com.akvamarin.friendsappserver.domain.dto.response.ViewEventUpdateDTO;
 import com.akvamarin.friendsappserver.domain.entity.event.Event;
 import lombok.NonNull;
 
@@ -9,11 +11,14 @@ import java.util.List;
 
 
 public interface EventService {
-    EventDTO createNewEvent(@NotNull EventDTO eventDTO);
+    Event createNewEvent(@NotNull EventDTO eventDTO);
     List<Event> saveAll(List<EventDTO> eventDTOs);
-    List<EventDTO> findAll();
-    EventDTO findById(long eventId);
-    EventDTO updateEvent(@NonNull EventDTO eventDTO);
+    List<ViewEventDTO> findAll();
+    ViewEventDTO findById(long eventId);
+
+    ViewEventUpdateDTO findByIdForViewUpdate(long eventId);
+
+    ViewEventDTO updateEvent(@NonNull EventDTO eventDTO);
     boolean deleteById(long eventId);
     void deleteAll();
 }

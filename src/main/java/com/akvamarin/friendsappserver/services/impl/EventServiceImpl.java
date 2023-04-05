@@ -1,9 +1,17 @@
 package com.akvamarin.friendsappserver.services.impl;
 
-import com.akvamarin.friendsappserver.domain.dto.EventDTO;
+import com.akvamarin.friendsappserver.domain.dto.EventCategoryDTO;
+import com.akvamarin.friendsappserver.domain.dto.request.EventDTO;
+import com.akvamarin.friendsappserver.domain.dto.response.ViewEventDTO;
+import com.akvamarin.friendsappserver.domain.dto.response.ViewEventUpdateDTO;
+import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.domain.entity.event.Event;
-import com.akvamarin.friendsappserver.domain.mapper.EventMapper;
+import com.akvamarin.friendsappserver.domain.entity.event.EventCategory;
+import com.akvamarin.friendsappserver.domain.mapper.event.EventCategoryListMapper;
+import com.akvamarin.friendsappserver.domain.mapper.event.EventMapper;
+import com.akvamarin.friendsappserver.repositories.EventCategoryRepository;
 import com.akvamarin.friendsappserver.repositories.EventRepository;
+import com.akvamarin.friendsappserver.repositories.UserRepository;
 import com.akvamarin.friendsappserver.services.EventService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.constraints.NotNull;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,13 +30,30 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
+
     private final EventMapper eventMapper;
+
+    private final EventCategoryRepository categoryRepository;
+
+    private final EventCategoryListMapper eventCategoryListMapper;
+
+    private final UserRepository userRepository;
+
 
     @Transactional
     @Override
-    public EventDTO createNewEvent(@NotNull EventDTO eventDTO) {
+    public Event createNewEvent(@NotNull EventDTO eventDTO) {
         Event event = eventMapper.toEntity(eventDTO);
-        return eventMapper.toDTO(eventRepository.save(event));
+
+        EventCategory eventCategory = categoryRepository.findById(eventDTO.getEventCategoryId())
+                .orElseThrow(EntityNotFoundException::new);
+
+        User userOwner = userRepository.findById(eventDTO.getOwnerId())
+                .orElseThrow(EntityNotFoundException::new);
+
+        event.setEventCategory(eventCategory);
+        event.setUser(userOwner);
+        return eventRepository.save(event);
     }
 
     @Transactional
@@ -41,8 +67,8 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public List<EventDTO> findAll() {
-        List<EventDTO> result = eventRepository.findAll().stream()
+    public List<ViewEventDTO> findAll() {
+        List<ViewEventDTO> result = eventRepository.findAll().stream()
                 .map(eventMapper::toDTO)
                 .collect(Collectors.toList());
         log.info("Method *** findAll *** : EventDTO list size = {}", result.size());
@@ -51,17 +77,33 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public EventDTO findById(long eventId) {
-        EventDTO result = eventRepository.findById(eventId)
+    public ViewEventDTO findById(long eventId) {
+        ViewEventDTO result = eventRepository.findById(eventId)
                 .map(eventMapper::toDTO)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Event with ID %d not found", eventId)));
         log.info("Method *** findById *** : EventDTO = {} EventID = {}", result, eventId);
         return result;
     }
 
+    @Transactional
+    @Override
+    public ViewEventUpdateDTO findByIdForViewUpdate(long eventId) {
+        List<EventCategory> categories = categoryRepository.findAll();
+        categories.sort(Comparator.comparing(EventCategory::getName));
+
+        ViewEventUpdateDTO result = eventRepository.findById(eventId)
+                .map(eventMapper::toUpdateDTO)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Event with ID %d not found", eventId)));
+
+        List<EventCategoryDTO> categoryDTOs = eventCategoryListMapper.toDTOList(categories);
+        result.setEventCategories(categoryDTOs);
+        log.info("Method *** findByIdForViewUpdate *** : EventDTO = {} EventID = {}", result, eventId);
+        return result;
+    }
+
     @Override
     @Transactional
-    public EventDTO updateEvent(@NonNull EventDTO eventDTO) {
+    public ViewEventDTO updateEvent(@NonNull EventDTO eventDTO) {
         Event event = eventRepository.findById(eventDTO.getId())
                 .map(ev -> {
                     eventMapper.updateEntity(eventDTO, ev);

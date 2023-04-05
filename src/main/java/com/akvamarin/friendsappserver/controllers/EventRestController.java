@@ -1,8 +1,11 @@
 package com.akvamarin.friendsappserver.controllers;
 
-import com.akvamarin.friendsappserver.domain.dto.EventDTO;
-import com.akvamarin.friendsappserver.domain.dto.responseerror.ErrorResponse;
-import com.akvamarin.friendsappserver.domain.dto.responseerror.ValidationErrorResponse;
+import com.akvamarin.friendsappserver.domain.dto.request.EventDTO;
+import com.akvamarin.friendsappserver.domain.dto.error.ErrorResponse;
+import com.akvamarin.friendsappserver.domain.dto.error.ValidationErrorResponse;
+import com.akvamarin.friendsappserver.domain.dto.response.ViewEventDTO;
+import com.akvamarin.friendsappserver.domain.dto.response.ViewEventUpdateDTO;
+import com.akvamarin.friendsappserver.domain.entity.event.Event;
 import com.akvamarin.friendsappserver.services.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -11,7 +14,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +25,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/events")
+@RequestMapping("/api/v1/events")
 @RequiredArgsConstructor
 @Slf4j
 public class EventRestController {
@@ -38,16 +40,16 @@ public class EventRestController {
             }
     )
     @PostMapping(name = "/createEvent", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EventDTO> createEvent(@Valid @RequestBody EventDTO eventDTO) {
+    public ResponseEntity<Void> createEvent(@Valid @RequestBody EventDTO eventDTO) {
 
-        final EventDTO createdEventDTO = eventService.createNewEvent(eventDTO);
+        final Event createdEvent = eventService.createNewEvent(eventDTO);
         final URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(createdEventDTO.getId())
+                .buildAndExpand(createdEvent.getId())
                 .toUri();
 
-        return ResponseEntity.created(uri).body(createdEventDTO);
+        return ResponseEntity.created(uri).build();
     }
 
     @Operation(
@@ -57,7 +59,7 @@ public class EventRestController {
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = EventDTO.class))))
     )
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<EventDTO> getAllEvents() {
+    public List<ViewEventDTO> getAllEvents() {
         return eventService.findAll();
     }
 
@@ -69,8 +71,20 @@ public class EventRestController {
             }
     )
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public EventDTO getEventByID(@PathVariable Long id) {
+    public ViewEventDTO getEventByID(@PathVariable Long id) {
         return eventService.findById(id);
+    }
+
+    @Operation(
+            summary = "Find event by ID, with all categories",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Event by ID found", content = @Content(schema = @Schema(implementation = EventDTO.class))),
+                    @ApiResponse(responseCode = "404", description = "Event not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            }
+    )
+    @GetMapping(value = "/{id}/update", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ViewEventUpdateDTO getEventByIdWithCategories(@PathVariable Long id) {
+        return eventService.findByIdForViewUpdate(id);
     }
 
     @Operation(
@@ -82,7 +96,7 @@ public class EventRestController {
             }
     )
     @PatchMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public EventDTO updateEvent(@Valid @RequestBody EventDTO dto) {
+    public ViewEventDTO updateEvent(@Valid @RequestBody EventDTO dto) {
         return eventService.updateEvent(dto);
     }
 
