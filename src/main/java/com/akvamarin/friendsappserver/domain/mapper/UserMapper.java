@@ -68,6 +68,8 @@ public abstract class UserMapper {
     public abstract void updateEntity(AuthUserSocialDTO socialDTO, @MappingTarget User user); */
 
     @BeanMapping(nullValueCheckStrategy = ALWAYS, nullValuePropertyMappingStrategy = IGNORE)
+    @Mapping(target = "cityDTO", source = "city")
+    @Mapping(target = "roles", source = "authorities")
     public abstract ViewUserSlimDTO userToViewUserSlimDTO(User user);
 
     @Named("stringToRole")
