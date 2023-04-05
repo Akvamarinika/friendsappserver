@@ -18,12 +18,23 @@ import java.time.LocalDate;
 @Builder
 public class EventDTO {
     private Long id;
+
     private String name;
+
     private String description;
+
     private LocalDate date;
+
     private PeriodOfTime periodOfTime;
+
     private Partner partner;
+
     private Long eventCategoryId;
+
     private Long ownerId;
+
+    private Double lat;
+
+    private Double lon;
 
 }

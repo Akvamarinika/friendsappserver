@@ -3,6 +3,7 @@ package com.akvamarin.friendsappserver.domain.dto.response;
 import com.akvamarin.friendsappserver.domain.dto.EventCategoryDTO;
 import com.akvamarin.friendsappserver.domain.enums.Partner;
 import com.akvamarin.friendsappserver.domain.enums.PeriodOfTime;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.jackson.Jacksonized;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * DTO для отображения
@@ -22,7 +24,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ViewEventDTO {
+public class ViewEventUpdateDTO {
     private Long id;
 
     private String name;
@@ -43,4 +45,6 @@ public class ViewEventDTO {
 
     private Double lon;
 
+    @JsonProperty("allEventCategories")
+    private List<EventCategoryDTO> eventCategories;
 }
