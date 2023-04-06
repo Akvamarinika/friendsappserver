@@ -54,6 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/events/**").permitAll()
                 .antMatchers("/api/v1/cities/**").permitAll()
                 .antMatchers("/api/v1/categories/**").permitAll()
+                .antMatchers("/api/v1/images/**").permitAll()
                 .antMatchers(ADMIN_ENDPOINT).hasRole("ADMIN") //только для админа
                 .antMatchers(LOGIN_ENDPOINT).permitAll() //для всех
                 .antMatchers(SWAGGER_URLS).permitAll() //для всех
