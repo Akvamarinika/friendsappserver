@@ -66,6 +66,28 @@ INSERT INTO user_authorities (user_id, authorities) VALUES
                                                         (9, 'USER'),
                                                         (10, 'USER');
 
+INSERT INTO comments (user_id, event_id, text, created_at, updated_at)
+VALUES
+    (1, 2, 'This is a great event!', NOW(), NOW()),
+    (2, 2, 'I had so much fun!', NOW(), NOW()),
+    (3, 1, 'This event could have been better', NOW(), NOW()),
+    (1, 3, 'Looking forward to the next one!', NOW(), NOW()),
+    (4, 4, 'This was my first time attending, and I was impressed!', NOW(), NOW()),
+    (2, 3, 'I think the location was perfect', NOW(), NOW()),
+    (5, 1, 'The food was amazing!', NOW(), NOW()),
+    (1, 5, 'The music was too loud', NOW(), NOW()),
+    (3, 4, 'I loved the decorations!', NOW(), NOW()),
+    (2, 1, 'I wish there were more activities to do', NOW(), NOW()),
+    (1, 6, 'The organizers did a great job', NOW(), NOW()),
+    (4, 3, 'I had a blast!', NOW(), NOW()),
+    (3, 2, 'I met so many new people', NOW(), NOW()),
+    (1, 4, 'The event was well-organized', NOW(), NOW()),
+    (5, 5, 'I thought the event was too long', NOW(), NOW()),
+    (2, 6, 'I loved the photo booth!', NOW(), NOW()),
+    (3, 5, 'I think the event could have used more seating', NOW(), NOW()),
+    (1, 1, 'The event was a bit too crowded for my taste', NOW(), NOW()),
+    (4, 2, 'I had a great time!', NOW(), NOW()),
+    (5, 6, 'The drinks were delicious', NOW(), NOW());
 
 
 
