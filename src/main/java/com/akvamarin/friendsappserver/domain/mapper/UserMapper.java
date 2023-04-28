@@ -44,7 +44,8 @@ public abstract class UserMapper {
 
     //AuthUserSocialDTO
     @BeanMapping(nullValueCheckStrategy = ALWAYS, nullValuePropertyMappingStrategy = IGNORE)
-    @Mapping(target = "email", source = "username")
+    @Mapping(target = "username", source = "username")
+    @Mapping(target = "email", source = "email")
     @Mapping(target = "password", ignore = true) // no
     @Mapping(target = "dateOfBirthday", source = "dateOfBirth", dateFormat = "d.M.yyyy") //yyyy-MM-dd
     @Mapping(target = "nickname", source = "firstName")

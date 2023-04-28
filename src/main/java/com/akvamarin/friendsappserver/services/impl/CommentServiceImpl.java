@@ -32,11 +32,11 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public CommentDTO createComment(Long eventId, Long userId, CommentDTO commentDTO) {
+    public CommentDTO createComment(Long eventId, CommentDTO commentDTO) {
         Optional<Event> optionalEvent = eventRepository.findById(eventId);
         Event event = optionalEvent.orElseThrow(() -> new EntityNotFoundException("Event not found"));
 
-        Optional<User> optionalUser = userRepository.findById(userId);
+        Optional<User> optionalUser = userRepository.findById(commentDTO.getUserId());
         User user = optionalUser.orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         Comment comment = commentMapper.toEntity(commentDTO);

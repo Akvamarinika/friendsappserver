@@ -3,7 +3,6 @@ package com.akvamarin.friendsappserver.controllers;
 import com.akvamarin.friendsappserver.domain.dto.error.ErrorResponse;
 import com.akvamarin.friendsappserver.domain.dto.error.ValidationErrorResponse;
 import com.akvamarin.friendsappserver.domain.dto.message.CommentDTO;
-import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.services.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -32,10 +31,10 @@ public class CommentRestController {
                     @ApiResponse(responseCode = "404", description = "Event or user not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
             }
     )
-    @PostMapping("/createComment/{eventId}/{userId}")
-    public ResponseEntity<Void> createComment(@PathVariable Long eventId, @PathVariable Long userId,
-                                                    @Valid @RequestBody CommentDTO commentDTO) {
-        final CommentDTO savedComment = commentService.createComment(eventId, userId, commentDTO);
+    @PostMapping("/create/{eventId}")
+    public ResponseEntity<Void> createComment(@PathVariable Long eventId,
+                                              @Valid @RequestBody CommentDTO commentDTO) {
+        final CommentDTO savedComment = commentService.createComment(eventId, commentDTO);
 
         final URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
