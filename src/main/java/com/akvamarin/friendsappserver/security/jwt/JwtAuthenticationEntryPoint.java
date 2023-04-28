@@ -27,9 +27,10 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
+        ErrorDescription errorDescription = new ErrorDescription("User not authorized", authException.getMessage());
+        String json = mapper.writeValueAsString(errorDescription);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        response.getWriter().write(mapper.writeValueAsString(
-                new ErrorDescription("User not authorized", authException.getMessage())));
+        response.getWriter().write(json);
     }
 }
