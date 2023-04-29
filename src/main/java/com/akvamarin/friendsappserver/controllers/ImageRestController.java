@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -27,9 +28,9 @@ public class ImageRestController {
     }
 
     @PostMapping(name = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
-        String url = imageService.saveImage(file);
-        return ResponseEntity.ok(url);
+    public ResponseEntity<Void> uploadImage(@RequestParam("file") MultipartFile file, Long userId) throws IOException {
+        imageService.setNewAvatar(file, userId);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/")

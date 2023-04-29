@@ -33,7 +33,7 @@ spring:
 
   web:
     resources:
-      static-locations: file:uploads/
+      static-locations: file:uploads/, classpath:/static/, classpath:/resources/
 
 
 logging:
@@ -53,6 +53,8 @@ vk:
     url-secure: https://api.vk.com/method/secure.checkToken
     access-token: 2c4d0e082c4d0e082c4d0e08602c31d42722c4d2c4d0e084eda30bd8995bc2db8551c5b
     secret-key: wlTS9TrsotgYppnRRMv7
+
+
 
 
 
