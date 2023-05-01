@@ -42,7 +42,7 @@ public class EventRestController {
                     @ApiResponse(responseCode = "400", description = "Wrong request format", content = @Content(schema = @Schema(implementation = ValidationErrorResponse.class)))
             }
     )
-    @PostMapping(name = "/createEvent", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(name = "/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> createEvent(@Valid @RequestBody EventDTO eventDTO, @Parameter(hidden = true) @CurrentUser User currentUser) {
         eventDTO.setOwnerId(currentUser.getId());
         log.debug("currentUser ID" + currentUser.getId());
