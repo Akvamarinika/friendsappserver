@@ -5,6 +5,7 @@ import com.akvamarin.friendsappserver.domain.enums.Psychotype;
 import com.akvamarin.friendsappserver.domain.enums.Sex;
 import com.akvamarin.friendsappserver.domain.enums.Smoking;
 import com.akvamarin.friendsappserver.utils.Constants;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -43,7 +44,8 @@ public class UserDTO implements Serializable {
     //@Size(min = 6, max = 128, message = "Password must be between 6-128 characters")
     private String password;
 
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirthday;
 
     @NotBlank(message = "Nickname cannot be blank")
@@ -60,11 +62,10 @@ public class UserDTO implements Serializable {
 
     private Psychotype psychotype;
 
-    @NotBlank(message = "URL avatar cannot be blank")
+    //@NotBlank(message = "URL avatar cannot be blank")
     private String urlAvatar;
 
     private Long cityID;
-    //private CityDTO cityDTO;
 
     private Set<String> roles;
 

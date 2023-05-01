@@ -3,9 +3,9 @@ package com.akvamarin.friendsappserver.controllers;
 import com.akvamarin.friendsappserver.domain.dto.AuthServerToken;
 import com.akvamarin.friendsappserver.domain.dto.AuthUserParamDTO;
 import com.akvamarin.friendsappserver.domain.dto.AuthUserSocialDTO;
+import com.akvamarin.friendsappserver.domain.dto.error.ValidationErrorResponse;
 import com.akvamarin.friendsappserver.domain.dto.request.UserDTO;
 import com.akvamarin.friendsappserver.domain.entity.User;
-import com.akvamarin.friendsappserver.domain.dto.error.ValidationErrorResponse;
 import com.akvamarin.friendsappserver.services.AuthenticationUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -88,6 +88,7 @@ public class AuthenticationRestController {
     @PostMapping(value = "/registration", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> registration(@Valid @RequestBody UserDTO userDTO) {
         final User user = authenticationUserService.registration(userDTO);
+
         final URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")

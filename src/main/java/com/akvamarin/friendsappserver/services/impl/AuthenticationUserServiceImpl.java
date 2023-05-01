@@ -1,6 +1,9 @@
 package com.akvamarin.friendsappserver.services.impl;
 
-import com.akvamarin.friendsappserver.domain.dto.*;
+import com.akvamarin.friendsappserver.domain.dto.AuthServerToken;
+import com.akvamarin.friendsappserver.domain.dto.AuthUserParamDTO;
+import com.akvamarin.friendsappserver.domain.dto.AuthUserSocialDTO;
+import com.akvamarin.friendsappserver.domain.dto.CheckTokenVkResponse;
 import com.akvamarin.friendsappserver.domain.dto.request.UserDTO;
 import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.security.JwtUserDetailsService;
@@ -39,6 +42,7 @@ public class AuthenticationUserServiceImpl implements AuthenticationUserService 
 
     @Override
     public User registration(@NonNull UserDTO userDTO) {
+        log.info("Method *** register *** : User login = {}", userDTO.getUsername());
         User registeredUser = userService.createNewUser(userDTO);
         log.info("Method *** register *** : User = {}", registeredUser);
         return registeredUser;
@@ -46,6 +50,7 @@ public class AuthenticationUserServiceImpl implements AuthenticationUserService 
 
     @Override
     public AuthServerToken authentication(@NonNull AuthUserParamDTO authUserParamDTO) {
+        log.info("Method *** authentication *** : User login = {}", authUserParamDTO.getUsername());
         String dtoUsername = authUserParamDTO.getUsername();
 
         Authentication authentication = authenticationManager.authenticate(
@@ -63,6 +68,7 @@ public class AuthenticationUserServiceImpl implements AuthenticationUserService 
     //VK
     @Override
     public AuthServerToken authOAuth2(@NonNull AuthUserSocialDTO userSocialDTO) {
+        log.info("Method *** authOAuth2 *** : User login = {}", userSocialDTO.getUsername());
         CheckTokenVkResponse checkTokenVkResponse;
 
         try {
@@ -74,7 +80,8 @@ public class AuthenticationUserServiceImpl implements AuthenticationUserService 
 
         log.info("Method *** authOAuth2 *** : checkTokenVkResponse = {} ", checkTokenVkResponse);
         if (checkTokenVkResponse.getSuccess() == 1) {
-            userService.createNewUserVKontakte(userSocialDTO);
+            User userSave = userService.createNewUserVKontakte(userSocialDTO);
+            log.info("Method *** authOAuth2 *** : userSave = {} vkID = {}", userSave.getUsername(), userSave.getVkId());
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(userSocialDTO.getUsername());
             Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails,

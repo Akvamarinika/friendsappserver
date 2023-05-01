@@ -8,7 +8,7 @@ import com.akvamarin.friendsappserver.domain.entity.User;
 import lombok.NonNull;
 
 public interface AuthenticationUserService {
-    User registration(UserDTO userDTO);
+    User registration(@NonNull UserDTO userDTO);
     AuthServerToken authentication(@NonNull AuthUserParamDTO authUserParamDTO);
     AuthServerToken authOAuth2(@NonNull AuthUserSocialDTO userSocialDTO);
 }

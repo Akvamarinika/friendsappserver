@@ -38,7 +38,7 @@ public class User implements UserDetails {
     private String username;
 
     @Email
-    @Column(unique = true, length = 64, nullable = false)
+    @Column(length = 64, nullable = false)
     private String email;
 
     @Column(unique = true, length = 14)

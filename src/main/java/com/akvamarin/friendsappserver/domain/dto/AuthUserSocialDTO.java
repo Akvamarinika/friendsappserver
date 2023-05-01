@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Set;
@@ -16,12 +15,9 @@ import java.util.Set;
 public class AuthUserSocialDTO {
 
     @Size(min = 3, max = 64)
-    @Email(message = "Email should be valid")
     @NotNull
     private String username;
 
-    @Size(min = 3, max = 64)
-    @Email(message = "Email should be valid")
     private String email;
 
     @Size(min = 3, max = 32)
