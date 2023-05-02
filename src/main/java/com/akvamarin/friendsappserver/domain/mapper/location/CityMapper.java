@@ -19,7 +19,8 @@ public interface CityMapper {
     @Mapping(target = "regionID", source = "region.id")
     @Mapping(target = "regionName", source = "region.name")
     @Mapping(target = "countryID", source = "region.federalDistrict.country.id")
-    @Mapping(target = "countryName", source = "region.federalDistrict.country.name")
+    //@Mapping(target = "countryName", source = "region.federalDistrict.country.name")
+    @Mapping(target = "countryName", source = "country.name")
     CityDTO toDTO(City city);
 
     @BeanMapping(nullValueCheckStrategy = ALWAYS, nullValuePropertyMappingStrategy = IGNORE) //*

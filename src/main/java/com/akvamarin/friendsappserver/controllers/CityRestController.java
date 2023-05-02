@@ -32,7 +32,7 @@ public class CityRestController {
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = EventDTO.class))))
     )
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<CityDTO> getAllEvents() {
+    public List<CityDTO> getAllCities() {
         return cityService.findAll();
     }
 }
