@@ -75,6 +75,18 @@ public class UserRestController {
     }
 
     @Operation(
+            summary = "Get user by login",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "User by login found", content = @Content(schema = @Schema(implementation = ViewUserDTO.class))),
+                    @ApiResponse(responseCode = "404", description = "User by login not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            }
+    )
+    @GetMapping(value = "/login/{login}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ViewUserDTO getUserByLogin(@PathVariable String login) {
+        return userService.findByLogin(login);
+    }
+
+    @Operation(
             summary = "Update existing user",
             responses = {
                     @ApiResponse(responseCode = "200", description = "User for requested ID is updated", content = @Content(schema = @Schema(implementation = UserDTO.class))),
@@ -96,6 +108,19 @@ public class UserRestController {
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
         userService.deleteById(id);
+    }
+
+
+    @Operation(
+            summary = "Username is taken",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Boolean answer"),
+            }
+    )
+    @GetMapping("/check/{username}")
+    public ResponseEntity<Boolean> isUsernameAlreadyTaken(@PathVariable String username) {
+        boolean isTaken = userService.isUsernameAlreadyTaken(username);
+        return ResponseEntity.ok(isTaken);
     }
 
 }

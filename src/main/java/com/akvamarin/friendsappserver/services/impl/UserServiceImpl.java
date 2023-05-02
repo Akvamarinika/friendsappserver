@@ -40,6 +40,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createNewUserVKontakte(@NotNull AuthUserSocialDTO userSocialDTO) {
         Optional<User> userOptional = userRepository.findByVkId(userSocialDTO.getVkId());
+        log.info("Method *** createNewUserVKontakte *** : user VK isPresent = {} ", userOptional.isPresent());
 
         if (userOptional.isPresent()) {
             return userOptional.get();
@@ -50,6 +51,8 @@ public class UserServiceImpl implements UserService {
         user.setCity(city);
         user.setEnabled(true);
 
+        log.info("Method *** createNewUserVKontakte *** : Username = {} vkID = {}", user.getUsername(), user.getVkId());
+        log.info("Method *** createNewUserVKontakte *** : User = {} ", user);
         return userRepository.save(user);
     }
 
@@ -95,10 +98,20 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public ViewUserDTO findById(long userID) {
-        ViewUserDTO result =  userRepository.findById(userID)
+        ViewUserDTO result = userRepository.findById(userID)
                 .map(userMapper::toDTO)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("User with ID %d not found", userID)));
         log.info("Method *** findById *** : UserDTO = {} UserID = {}", result, userID);
+        return result;
+    }
+
+    @Override
+    @Transactional
+    public ViewUserDTO findByLogin(String login) {
+        ViewUserDTO result = userRepository.findUserByUsername(login)
+                .map(userMapper::toDTO)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("User with login %s not found", login)));
+        log.info("Method *** findById *** : UserDTO = {} Login = {}", result, login);
         return result;
     }
 
@@ -134,7 +147,6 @@ public class UserServiceImpl implements UserService {
         return isDeletedUser;
     }
 
-
     @Transactional
     @Override
     public User createNewUserVK(@NotNull AuthUserSocialDTO userSocialDTO) throws ValidationException {
@@ -142,13 +154,6 @@ public class UserServiceImpl implements UserService {
                 userSocialDTO.getEmail(), userSocialDTO.getVkId()).isPresent();
 
         //TODO: определить точно: дубликат почты или ВК uuid
-      /*  if (isUserFromDBDuplicateEmailOrVkId) {
-            if (userSocialDTO.getVkId() != null) {
-                throw new ValidationException("VK ID already registered!");
-            } else if (userSocialDTO.getEmail() != null) {
-                throw new ValidationException("Email already registered!");
-            }
-        }*/
 
         if (isUserFromDBDuplicateEmailOrVkId) {
             throw new ValidationException("VK ID or Email already registered!");
@@ -161,5 +166,13 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.save(user); //return User from DB
     }
+
+    @Transactional(readOnly = true)
+    public boolean isUsernameAlreadyTaken(String username) {
+        Optional<User> existingUser = userRepository.findUserByUsername(username);
+        log.info("Method *** isUsernameAlreadyTaken *** : username = {} existingUser = {}", username, existingUser.isPresent());
+        return existingUser.isPresent();
+    }
+
 
 }
