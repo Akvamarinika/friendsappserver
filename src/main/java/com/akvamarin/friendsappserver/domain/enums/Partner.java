@@ -6,11 +6,11 @@ import java.io.Serializable;
 
 @AllArgsConstructor
 public enum Partner implements Serializable {
-    MAN("парень"),
-    WOMAN("девушка"),
-    COMPANY("компания"),
-    ANY("любой"),
-    UNKNOWN("неизвестно");
+    MAN("Парень"),
+    WOMAN("Девушка"),
+    COMPANY("Компания"),
+    ANY("Любой"),
+    UNKNOWN("Неизвестно");
 
     private final String rusValue;
 
