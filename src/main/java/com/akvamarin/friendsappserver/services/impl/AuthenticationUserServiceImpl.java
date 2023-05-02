@@ -64,6 +64,7 @@ public class AuthenticationUserServiceImpl implements AuthenticationUserService 
     @Override
     public AuthServerToken authOAuth2(@NonNull AuthUserSocialDTO userSocialDTO) {
         CheckTokenVkResponse checkTokenVkResponse;
+
         try {
             checkTokenVkResponse = requestTokenUserVK(userSocialDTO);
         } catch (JsonProcessingException ex) {

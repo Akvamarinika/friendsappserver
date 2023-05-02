@@ -1,6 +1,7 @@
 package com.akvamarin.friendsappserver.controllers;
 
 import com.akvamarin.friendsappserver.domain.dto.response.ViewUserDTO;
+import com.akvamarin.friendsappserver.domain.dto.response.ViewUserSlimDTO;
 import com.akvamarin.friendsappserver.services.UserService;
 import com.akvamarin.friendsappserver.domain.dto.request.UserDTO;
 import com.akvamarin.friendsappserver.domain.entity.User;
@@ -51,13 +52,13 @@ public class UserRestController {
     }
 
     @Operation(
-            summary = "Get all users",
+            summary = "Get all slim users",
             responses = @ApiResponse(responseCode = "200",
-                    description = "All users",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserDTO.class))))
+                    description = "All slim users",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ViewUserSlimDTO.class))))
     )
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ViewUserDTO> getAllUsers() {
+    public List<ViewUserSlimDTO> getAllUsers() {
         return userService.findAll();
     }
 
@@ -96,4 +97,5 @@ public class UserRestController {
     public void deleteUser(@PathVariable Long id) {
         userService.deleteById(id);
     }
+
 }

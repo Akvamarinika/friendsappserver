@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,6 +27,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 
+@Slf4j
 @RestController
 @RequestMapping("api/v1/auth")
 @RequiredArgsConstructor
@@ -65,10 +67,12 @@ public class AuthenticationRestController {
     public ResponseEntity<AuthServerToken> loginWithOauth2(@RequestBody @Valid AuthUserSocialDTO userSocialDTO) {
         try {
             AuthServerToken authServerToken = authenticationUserService.authOAuth2(userSocialDTO);
+            log.info("Method *** loginWithOauth2 *** : HttpStatus = {} ", HttpHeaders.AUTHORIZATION);
             return ResponseEntity.ok()
                     .header(HttpHeaders.AUTHORIZATION, authServerToken.getToken())
                     .body(authServerToken);
         } catch (BadCredentialsException ex) {
+            log.info("Method *** loginWithOauth2 *** : HttpStatus = {} ", HttpStatus.UNAUTHORIZED);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }

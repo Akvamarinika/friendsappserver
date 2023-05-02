@@ -1,6 +1,7 @@
 package com.akvamarin.friendsappserver.services.impl;
 import com.akvamarin.friendsappserver.domain.dto.AuthUserSocialDTO;
 import com.akvamarin.friendsappserver.domain.dto.response.ViewUserDTO;
+import com.akvamarin.friendsappserver.domain.dto.response.ViewUserSlimDTO;
 import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.domain.entity.location.City;
 import com.akvamarin.friendsappserver.repositories.UserRepository;
@@ -83,11 +84,11 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public List<ViewUserDTO> findAll() {
-        List<ViewUserDTO> result = userRepository.findAll().stream()
-                .map(userMapper::toDTO)
+    public List<ViewUserSlimDTO> findAll() {
+        List<ViewUserSlimDTO> result = userRepository.findAll().stream()
+                .map(userMapper::userToViewUserSlimDTO)
                 .collect(Collectors.toList());
-        log.info("Method *** findAll *** : UserDTO list size = {}", result.size());
+        log.info("Method *** findAll *** : ViewUserSlimDTO list size = {}", result.size());
         return result;
     }
 
