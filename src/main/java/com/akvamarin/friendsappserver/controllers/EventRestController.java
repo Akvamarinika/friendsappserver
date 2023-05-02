@@ -1,13 +1,16 @@
 package com.akvamarin.friendsappserver.controllers;
 
-import com.akvamarin.friendsappserver.domain.dto.request.EventDTO;
 import com.akvamarin.friendsappserver.domain.dto.error.ErrorResponse;
 import com.akvamarin.friendsappserver.domain.dto.error.ValidationErrorResponse;
+import com.akvamarin.friendsappserver.domain.dto.request.EventDTO;
 import com.akvamarin.friendsappserver.domain.dto.response.ViewEventDTO;
 import com.akvamarin.friendsappserver.domain.dto.response.ViewEventUpdateDTO;
+import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.domain.entity.event.Event;
+import com.akvamarin.friendsappserver.security.CurrentUser;
 import com.akvamarin.friendsappserver.services.EventService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -40,8 +43,9 @@ public class EventRestController {
             }
     )
     @PostMapping(name = "/createEvent", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> createEvent(@Valid @RequestBody EventDTO eventDTO) {
-
+    public ResponseEntity<Void> createEvent(@Valid @RequestBody EventDTO eventDTO, @Parameter(hidden = true) @CurrentUser User currentUser) {
+        eventDTO.setOwnerId(currentUser.getId());
+        log.debug("currentUser ID" + currentUser.getId());
         final Event createdEvent = eventService.createNewEvent(eventDTO);
         final URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
