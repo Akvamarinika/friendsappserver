@@ -1,6 +1,7 @@
 package com.akvamarin.friendsappserver.services.impl;
 
 import com.akvamarin.friendsappserver.domain.dto.message.CommentDTO;
+import com.akvamarin.friendsappserver.domain.dto.response.ViewCommentDTO;
 import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.domain.entity.event.Event;
 import com.akvamarin.friendsappserver.domain.entity.message.Comment;
@@ -49,20 +50,20 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public CommentDTO findCommentById(Long commentId) {
+    public ViewCommentDTO findCommentById(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new EntityNotFoundException("Comment with id " + commentId + " not found"));
-        return commentMapper.toDTO(comment);
+        return commentMapper.toViewDTO(comment);
     }
 
     @Transactional
     @Override
-    public List<CommentDTO> getAllCommentsByEventId(Long eventId) {
+    public List<ViewCommentDTO> getAllCommentsByEventId(Long eventId) {
         Optional<Event> optionalEvent = eventRepository.findById(eventId);
         Event event = optionalEvent.orElseThrow(() -> new EntityNotFoundException("Event not found"));
 
         List<Comment> comments = commentRepository.findAllByEventOrderByCreatedAtDesc(event);
-        return comments.stream().map(commentMapper::toDTO).collect(Collectors.toList());
+        return comments.stream().map(commentMapper::toViewDTO).collect(Collectors.toList());
     }
 
     @Transactional
@@ -82,15 +83,16 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public CommentDTO updateComment(Long commentId, CommentDTO commentDTO) {
+    public ViewCommentDTO updateComment(Long commentId, CommentDTO commentDTO) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new EntityNotFoundException("Comment with id " + commentId + " not found"));
 
         comment.setText(commentDTO.getText());
         comment.setUpdatedAt(LocalDateTime.now());
+        comment.setEdited(true);
 
         Comment updatedComment = commentRepository.save(comment);
-        return commentMapper.toDTO(updatedComment);
+        return commentMapper.toViewDTO(updatedComment);
     }
 
 }

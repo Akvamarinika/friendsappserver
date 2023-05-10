@@ -3,8 +3,12 @@ package com.akvamarin.friendsappserver.controllers;
 import com.akvamarin.friendsappserver.domain.dto.error.ErrorResponse;
 import com.akvamarin.friendsappserver.domain.dto.error.ValidationErrorResponse;
 import com.akvamarin.friendsappserver.domain.dto.message.CommentDTO;
+import com.akvamarin.friendsappserver.domain.dto.response.ViewCommentDTO;
+import com.akvamarin.friendsappserver.domain.entity.User;
+import com.akvamarin.friendsappserver.security.CurrentUser;
 import com.akvamarin.friendsappserver.services.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,8 +36,10 @@ public class CommentRestController {
             }
     )
     @PostMapping("/create/{eventId}")
-    public ResponseEntity<Void> createComment(@PathVariable Long eventId,
-                                              @Valid @RequestBody CommentDTO commentDTO) {
+    public ResponseEntity<Void> createComment(@PathVariable Long eventId, @Valid @RequestBody CommentDTO commentDTO,
+                                              @Parameter(hidden = true) @CurrentUser User currentUser) {
+
+        commentDTO.setUserId(currentUser.getId());
         final CommentDTO savedComment = commentService.createComment(eventId, commentDTO);
 
         final URI uri = ServletUriComponentsBuilder
@@ -53,8 +59,8 @@ public class CommentRestController {
             }
     )
     @GetMapping("/{commentId}")
-    public ResponseEntity<CommentDTO> findCommentById(@PathVariable Long commentId) {
-        CommentDTO comment = commentService.findCommentById(commentId);
+    public ResponseEntity<ViewCommentDTO> findCommentById(@PathVariable Long commentId) {
+        ViewCommentDTO comment = commentService.findCommentById(commentId);
         return ResponseEntity.ok(comment);
     }
 
@@ -63,9 +69,8 @@ public class CommentRestController {
             responses = @ApiResponse(responseCode = "200", description = "All comments for the event", content = @Content(array = @ArraySchema(schema = @Schema(implementation = CommentDTO.class))))
     )
     @GetMapping("/event/{eventId}")
-    public ResponseEntity<List<CommentDTO>> getAllCommentsByEventId(@PathVariable Long eventId) {
-        List<CommentDTO> comments = commentService.getAllCommentsByEventId(eventId);
-        return ResponseEntity.ok(comments);
+    public List<ViewCommentDTO> getAllCommentsByEventId(@PathVariable Long eventId) {
+        return commentService.getAllCommentsByEventId(eventId);
     }
 
     @Operation(
@@ -100,9 +105,9 @@ public class CommentRestController {
             }
     )
     @PatchMapping("/{commentId}")
-    public ResponseEntity<CommentDTO> updateComment(@PathVariable Long commentId,
+    public ResponseEntity<ViewCommentDTO> updateComment(@PathVariable Long commentId,
                                                     @RequestBody CommentDTO commentDTO) {
-        CommentDTO updatedComment = commentService.updateComment(commentId, commentDTO);
+        ViewCommentDTO updatedComment = commentService.updateComment(commentId, commentDTO);
         return ResponseEntity.ok(updatedComment);
     }
 }

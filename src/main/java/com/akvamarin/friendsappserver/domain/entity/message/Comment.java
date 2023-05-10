@@ -45,4 +45,7 @@ public class Comment {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Builder.Default
+    @Column(name = "edited")
+    private boolean edited = false;
 }
