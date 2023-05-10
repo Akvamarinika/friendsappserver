@@ -87,6 +87,18 @@ public class UserRestController {
     }
 
     @Operation(
+            summary = "Get slim user by login",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Slim user by login found", content = @Content(schema = @Schema(implementation = ViewUserDTO.class))),
+                    @ApiResponse(responseCode = "404", description = "Slim user by login not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            }
+    )
+    @GetMapping(value = "/slim/login/{login}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ViewUserSlimDTO getSlimUserByLogin(@PathVariable String login) {
+        return userService.findSlimUserByLogin(login);
+    }
+
+    @Operation(
             summary = "Update existing user",
             responses = {
                     @ApiResponse(responseCode = "200", description = "User for requested ID is updated", content = @Content(schema = @Schema(implementation = UserDTO.class))),

@@ -21,6 +21,8 @@ import java.util.Set;
 public class ViewUserSlimDTO {
     private Long id;
 
+    private String username;
+
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private LocalDate dateOfBirthday;
 

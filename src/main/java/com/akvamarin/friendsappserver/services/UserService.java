@@ -14,15 +14,19 @@ public interface UserService {
     //ВК регист-ия
     User createNewUserVKontakte(@NotNull AuthUserSocialDTO userSocialDTO) throws ValidationException;
 
-    //public User getUser(User user);
     User createNewUser(@NotNull UserDTO userDTO);
+
     User createNewUserVK(@NotNull AuthUserSocialDTO userSocialDTO);
+
     List<ViewUserSlimDTO> findAll();
     ViewUserDTO findById(long userID);
 
     ViewUserDTO findByLogin(String login);
 
+    ViewUserSlimDTO findSlimUserByLogin(String login);
+
     User updateUser(UserDTO userDTO);
+
     boolean deleteById(long id);
 
     boolean isUsernameAlreadyTaken(String username);

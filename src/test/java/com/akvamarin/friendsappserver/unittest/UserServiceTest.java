@@ -3,6 +3,7 @@ package com.akvamarin.friendsappserver.unittest;
 import com.akvamarin.friendsappserver.domain.dto.AuthUserSocialDTO;
 import com.akvamarin.friendsappserver.domain.dto.request.UserDTO;
 import com.akvamarin.friendsappserver.domain.dto.response.ViewUserDTO;
+import com.akvamarin.friendsappserver.domain.dto.response.ViewUserSlimDTO;
 import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.domain.entity.location.City;
 import com.akvamarin.friendsappserver.domain.entity.location.Country;
@@ -275,7 +276,7 @@ class UserServiceTest {
 				.thenReturn(userDto2);
 
 		// Actual
-		List<ViewUserDTO> actualList = userService.findAll();
+		List<ViewUserSlimDTO> actualList = userService.findAll();
 
 		// Asserts
 		Assertions.assertEquals(expectedList.size(), actualList.size());

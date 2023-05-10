@@ -117,6 +117,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    public ViewUserSlimDTO findSlimUserByLogin(String login) {
+        ViewUserSlimDTO result = userRepository.findUserByUsername(login)
+                .map(userMapper::userToViewUserSlimDTO)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("User with login %s not found", login)));
+        log.info("Method *** findSlimUserByLogin *** : ViewUserSlimDTO = {} Login = {}", result, login);
+        return result;
+    }
+
+    @Override
+    @Transactional
     public User updateUser(@NonNull UserDTO userDTO) {
         return userRepository.findById(userDTO.getId())
                 .map(user -> {
