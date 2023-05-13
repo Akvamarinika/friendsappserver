@@ -64,10 +64,6 @@ public abstract class UserMapper {
     @Mapping(target = "authorities", source = "roles", qualifiedByName = "stringToRole") // default
     public abstract User toEntity(AuthUserSocialDTO socialDTO);
 
-    /* @Mapping(target = "authorities", source = "roles", qualifiedByName = "stringToRole")
-    @Mapping(target = "city", ignore = true)  // add from city service
-    public abstract void updateEntity(AuthUserSocialDTO socialDTO, @MappingTarget User user); */
-
     @BeanMapping(nullValueCheckStrategy = ALWAYS, nullValuePropertyMappingStrategy = IGNORE)
     @Mapping(target = "cityDTO", source = "city")
     @Mapping(target = "roles", source = "authorities")

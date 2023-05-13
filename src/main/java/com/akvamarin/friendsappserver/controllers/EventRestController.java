@@ -75,7 +75,7 @@ public class EventRestController {
             }
     )
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ViewEventDTO getEventByID(@PathVariable Long id) {
+    public ViewEventDTO getEventById(@PathVariable Long id) {
         return eventService.findById(id);
     }
 

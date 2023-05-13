@@ -31,16 +31,16 @@ INSERT INTO event_categories (name) VALUES
 
 INSERT INTO users (username, email, phone, password, nickname, date_of_birthday, e_sex, about_me, e_smoking, e_alcohol, e_psychotype, url_avatar, city_id, created_at, updated_at, vk_id, enabled)
 VALUES
-    ('1234567', 'victor@example.com', '89895551234', 'password1', 'Виктор', '2000-01-01', 1, 'Привет! Мое имя Виктор.', 0, 0, 1, 'https://meragor.com/files/styles//ava_800_800_wm/sfztn_boy_avatar_1.jpg', 1, NOW(), NOW(), '1234567', true),
-    ('anna@example.com', 'anna@example.com', '89505552345', 'password2', 'Анна', '1998-05-05', 2, 'Привет! Мое имя Анна.', 1, 0, 2, 'https://meragor.com/files/styles//ava_800_800_wm/_5_5.jpg', 2, NOW(), NOW(), NULL, true),
-    ('peter@example.com', 'peter@example.com', '89145553456', 'password3', 'Пётр', '1995-10-10', 1, 'Привет! Мое имя Пётр.', 1, 3, 2, 'https://demotivation.ru/wp-content/uploads/2020/11/905e85b5e1f2b5e1935c81b3c2478829.jpg', 1, NOW(), NOW(), NULL, true),
-    ('mary@example.com', 'mary@example.com', '89245554567', 'password4', 'Мария', '2005-12-25', 2, 'Привет! Мое имя Мария.', 2, 2, 0, 'https://meragor.com/files/styles//ava_800_800_wm/avatar-211226-001768.png', 3,  NOW(), NOW(), NULL, true),
-    ('alex@example.com', 'alex@example.com', '89505555678', 'password5', 'Александр', '2003-02-14', 1, 'Привет! Мое имя Александр.', 3, 3, 0, 'https://meragor.com/files/styles//ava_800_800_wm/sfztn_boy_avatar_18.jpg', 2,  NOW(), NOW(), NULL, true),
-    ('victoria@example.com', 'victoria@example.com', NULL, 'password6', 'Вика', '1998-07-20', 2, 'Привет! Мое имя Виктория.', 4, 4, 2, 'https://meragor.com/files/styles//ava_800_800_wm/avatar-210866-000320.png', 3,  NOW(), NOW(), NULL, true),
-    ('nikita@example.com', 'nikita@example.com', NULL, 'password7', 'Никита', '1997-03-17', 1, 'Привет! Мое имя Никита.', 1, 3, 3, 'https://it-doc.info/wp-content/uploads/2019/06/avatar-9.jpg', 1,  NOW(), NOW(), NULL, true),
-    ('nick@example.com', 'nick@example.com', NULL, 'password8', 'Николай', '1999-11-11', 1, 'Привет! Мое имя Николай.', 2, 2, 3, 'https://meragor.com/files/styles//ava_800_800_wm/sfztn_boy_avatar_64.jpg', 2,  NOW(), NOW(), NULL, true),
-    ('david@example.com', 'david@example.com', NULL, 'password9', 'Давид', '1999-09-15', 1, 'Привет! Мое имя Давид.', 3, 1, 2, 'https://it-doc.info/wp-content/uploads/2019/06/avatar-guitar-man.jpg', 3,  NOW(), NOW(), NULL, true),
-    ('7654321', 'inna@example.com', NULL, 'password10', 'Инна', '2002-06-30', 2, 'Привет! Мое имя Инна.', 4, 0, 1, 'https://meragor.com/files/styles//ava_800_800_wm/2_8.jpg', 3,  NOW(), NOW(), '7654321', true);
+    ('1234567', 'victor@example.com', '89895551234', '$2a$10$eNkLTyFdWKntk1gBO4pp7OiGmm/TaI7Y.8mJVKv.xk8bQGvauQ.8S', 'Виктор', '2000-01-01', 1, 'Привет! Мое имя Виктор.', 0, 0, 1, 'https://meragor.com/files/styles//ava_800_800_wm/sfztn_boy_avatar_1.jpg', 1, NOW(), NOW(), '1234567', true),
+    ('anna@example.com', 'anna@example.com', '89505552345', '$2a$10$eNkLTyFdWKntk1gBO4pp7OiGmm/TaI7Y.8mJVKv.xk8bQGvauQ.8S', 'Анна', '1998-05-05', 2, 'Привет! Мое имя Анна.', 1, 0, 2, 'https://meragor.com/files/styles//ava_800_800_wm/_5_5.jpg', 2, NOW(), NOW(), NULL, true),
+    ('peter@example.com', 'peter@example.com', '89145553456', '$2a$10$eNkLTyFdWKntk1gBO4pp7OiGmm/TaI7Y.8mJVKv.xk8bQGvauQ.8S', 'Пётр', '1995-10-10', 1, 'Привет! Мое имя Пётр.', 1, 3, 2, 'https://demotivation.ru/wp-content/uploads/2020/11/905e85b5e1f2b5e1935c81b3c2478829.jpg', 1, NOW(), NOW(), NULL, true),
+    ('mary@example.com', 'mary@example.com', '89245554567', '$2a$10$eNkLTyFdWKntk1gBO4pp7OiGmm/TaI7Y.8mJVKv.xk8bQGvauQ.8S', 'Мария', '2005-12-25', 2, 'Привет! Мое имя Мария.', 2, 2, 0, 'https://meragor.com/files/styles//ava_800_800_wm/avatar-211226-001768.png', 3,  NOW(), NOW(), NULL, true),
+    ('alex@example.com', 'alex@example.com', '89505555678', '$2a$10$eNkLTyFdWKntk1gBO4pp7OiGmm/TaI7Y.8mJVKv.xk8bQGvauQ.8S', 'Александр', '2003-02-14', 1, 'Привет! Мое имя Александр.', 3, 3, 0, 'https://meragor.com/files/styles//ava_800_800_wm/sfztn_boy_avatar_18.jpg', 2,  NOW(), NOW(), NULL, true),
+    ('victoria@example.com', 'victoria@example.com', NULL, '$2a$10$eNkLTyFdWKntk1gBO4pp7OiGmm/TaI7Y.8mJVKv.xk8bQGvauQ.8S', 'Вика', '1998-07-20', 2, 'Привет! Мое имя Виктория.', 4, 4, 2, 'https://meragor.com/files/styles//ava_800_800_wm/avatar-210866-000320.png', 3,  NOW(), NOW(), NULL, true),
+    ('nikita@example.com', 'nikita@example.com', NULL, '$2a$10$eNkLTyFdWKntk1gBO4pp7OiGmm/TaI7Y.8mJVKv.xk8bQGvauQ.8S', 'Никита', '1997-03-17', 1, 'Привет! Мое имя Никита.', 1, 3, 3, 'https://it-doc.info/wp-content/uploads/2019/06/avatar-9.jpg', 1,  NOW(), NOW(), NULL, true),
+    ('nick@example.com', 'nick@example.com', NULL, '$2a$10$eNkLTyFdWKntk1gBO4pp7OiGmm/TaI7Y.8mJVKv.xk8bQGvauQ.8S', 'Николай', '1999-11-11', 1, 'Привет! Мое имя Николай.', 2, 2, 3, 'https://meragor.com/files/styles//ava_800_800_wm/sfztn_boy_avatar_64.jpg', 2,  NOW(), NOW(), NULL, true),
+    ('david@example.com', 'david@example.com', NULL, '$2a$10$eNkLTyFdWKntk1gBO4pp7OiGmm/TaI7Y.8mJVKv.xk8bQGvauQ.8S', 'Давид', '1999-09-15', 1, 'Привет! Мое имя Давид.', 3, 1, 2, 'https://it-doc.info/wp-content/uploads/2019/06/avatar-guitar-man.jpg', 3,  NOW(), NOW(), NULL, true),
+    ('7654321', 'inna@example.com', NULL, '$2a$10$eNkLTyFdWKntk1gBO4pp7OiGmm/TaI7Y.8mJVKv.xk8bQGvauQ.8S', 'Инна', '2002-06-30', 2, 'Привет! Мое имя Инна.', 4, 0, 1, 'https://meragor.com/files/styles//ava_800_800_wm/2_8.jpg', 3,  NOW(), NOW(), '7654321', true);
 
 
 INSERT INTO events (name, description, date, e_period_of_time, e_partner, created_at, updated_at, event_category_id, owner_id) VALUES
@@ -90,5 +90,18 @@ VALUES
     (4, 2, 'Я прекрасно провел время!', NOW(), NOW(), false),
     (5, 6, 'Напитки были восхитительны', NOW(), NOW(), false);
 
-
-
+INSERT INTO events_and_participants (event_id, user_id, feedback_type, created_at, updated_at, owner_viewed, participant_viewed)
+VALUES
+    (1, 2, 'APPROVED', '2023-05-15 10:00:00', '2023-05-15 10:00:00', false, false),
+    (1, 3, 'REJECTED', '2023-05-15 10:00:00', '2023-05-15 10:00:00', false, false),
+    (1, 4, 'WAITING', '2023-05-15 10:00:00', '2023-05-15 10:00:00', false, false),
+    (2, 1, 'APPROVED', '2023-05-15 10:00:00', '2023-05-15 10:00:00', false, false),
+    (2, 2, 'REJECTED', '2023-05-15 10:00:00', '2023-05-15 10:00:00', false, true),
+    (2, 3, 'WAITING', '2023-05-15 10:00:00', '2023-05-15 10:00:00', false, false),
+    (2, 4, 'WAITING', '2023-05-15 10:00:00', '2023-05-15 10:00:00', false, false),
+    (3, 1, 'APPROVED', '2023-05-15 10:00:00', '2023-05-15 10:00:00', true, false),
+    (3, 3, 'REJECTED', '2023-05-15 10:00:00', '2023-05-15 10:00:00', false, false),
+    (3, 4, 'WAITING', '2023-05-15 10:00:00', '2023-05-15 10:00:00', false, false),
+    (3, 5, 'APPROVED', '2023-05-15 10:00:00', '2023-05-15 10:00:00', false, false),
+    (7, 2, 'WAITING', '2023-05-15 10:00:00', '2023-05-10 12:00:00', false, false),
+    (8, 2, 'WAITING', '2023-05-15 10:00:00', '2023-05-15 10:00:00', false, false);
