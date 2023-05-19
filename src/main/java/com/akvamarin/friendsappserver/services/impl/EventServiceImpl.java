@@ -106,6 +106,12 @@ public class EventServiceImpl implements EventService {
     public ViewEventDTO updateEvent(@NonNull EventDTO eventDTO) {
         Event event = eventRepository.findById(eventDTO.getId())
                 .map(ev -> {
+                    Long categoryId = eventDTO.getEventCategoryId();
+                    EventCategory category = categoryRepository.findById(categoryId)
+                            .orElseThrow(() -> new EntityNotFoundException(String.format("Event category with ID %d not found", categoryId)));
+
+                    ev.setEventCategory(category);
+
                     eventMapper.updateEntity(eventDTO, ev);
                     return eventRepository.save(ev);
                 })
