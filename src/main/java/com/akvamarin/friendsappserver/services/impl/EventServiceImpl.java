@@ -2,6 +2,7 @@ package com.akvamarin.friendsappserver.services.impl;
 
 import com.akvamarin.friendsappserver.domain.dto.EventCategoryDTO;
 import com.akvamarin.friendsappserver.domain.dto.request.EventDTO;
+import com.akvamarin.friendsappserver.domain.dto.request.EventFilter;
 import com.akvamarin.friendsappserver.domain.dto.response.ViewEventDTO;
 import com.akvamarin.friendsappserver.domain.dto.response.ViewEventUpdateDTO;
 import com.akvamarin.friendsappserver.domain.entity.User;
@@ -24,6 +25,8 @@ import javax.validation.constraints.NotNull;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.akvamarin.friendsappserver.utils.FilterHelper.*;
 
 @Slf4j
 @Service
@@ -135,6 +138,24 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public void deleteAll() {
         eventRepository.deleteAll();
+    }
+
+    @Transactional
+    @Override
+    public List<ViewEventDTO> filterEvents(EventFilter eventFilter) {
+        List<Event> filteredEvents = eventRepository.findAll().stream()
+                .filter(event -> matchesCity(event, eventFilter.getCityId()))
+                .filter(event -> matchesCategories(event, eventFilter.getCategoryIds()))
+                .filter(event -> matchesUserOrganizer(event, eventFilter.isUserOrganizer(), eventFilter.getCurrentUserId()))
+                .filter(event -> matchesPartner(event, eventFilter.getPartnerList()))
+                .filter(event -> matchesDaysOfWeek(event, eventFilter.getDaysOfWeekList()))
+                .filter(event -> matchesPeriodOfTime(event, eventFilter.getPeriodOfTimeList()))
+                .sorted(getEventComparator(eventFilter.getSortingType(), eventFilter.getUserCoords()))
+                .collect(Collectors.toList());
+
+        return filteredEvents.stream()
+                .map(eventMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
 }

@@ -5,6 +5,7 @@ import com.akvamarin.friendsappserver.domain.dto.error.ValidationErrorResponse;
 import com.akvamarin.friendsappserver.domain.dto.request.EventDTO;
 import com.akvamarin.friendsappserver.domain.dto.response.ViewEventDTO;
 import com.akvamarin.friendsappserver.domain.dto.response.ViewEventUpdateDTO;
+import com.akvamarin.friendsappserver.domain.dto.request.EventFilter;
 import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.domain.entity.event.Event;
 import com.akvamarin.friendsappserver.security.CurrentUser;
@@ -104,7 +105,6 @@ public class EventRestController {
         return eventService.updateEvent(dto);
     }
 
-
     @Operation(
             summary = "Remove event by ID",
             responses = @ApiResponse(responseCode = "204", description = "Event for requested ID is removed")
@@ -115,6 +115,16 @@ public class EventRestController {
         eventService.deleteById(id);
     }
 
+    @Operation(
+            summary = "Filter events",
+            responses = @ApiResponse(responseCode = "200",
+                    description = "Filtered events",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ViewEventDTO.class))))
+    )
+    @PostMapping(value = "/filter", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<ViewEventDTO> filterEvents(@RequestBody EventFilter eventFilter) {
+        return eventService.filterEvents(eventFilter);
+    }
 
 }
 
