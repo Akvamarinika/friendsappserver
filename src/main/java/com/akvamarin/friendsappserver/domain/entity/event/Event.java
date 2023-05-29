@@ -1,6 +1,7 @@
 package com.akvamarin.friendsappserver.domain.entity.event;
 
 import com.akvamarin.friendsappserver.domain.entity.User;
+import com.akvamarin.friendsappserver.domain.entity.message.Comment;
 import com.akvamarin.friendsappserver.domain.enums.Partner;
 import com.akvamarin.friendsappserver.domain.enums.PeriodOfTime;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -15,6 +18,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -60,4 +64,19 @@ public class Event {
     private Double lat;
 
     private Double lon;
+
+    @OneToMany(mappedBy = "event")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private List<Comment> comments;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    private List<NotificationParticipant> participants;
+
+    public List<NotificationParticipant> getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(List<NotificationParticipant> participants) {
+        this.participants = participants;
+    }
 }

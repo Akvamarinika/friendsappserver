@@ -1,7 +1,9 @@
 package com.akvamarin.friendsappserver.domain.entity;
 
 import com.akvamarin.friendsappserver.domain.entity.event.Event;
+import com.akvamarin.friendsappserver.domain.entity.event.NotificationParticipant;
 import com.akvamarin.friendsappserver.domain.entity.location.City;
+import com.akvamarin.friendsappserver.domain.entity.message.Comment;
 import com.akvamarin.friendsappserver.domain.enums.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -106,6 +108,12 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     private List<Event> events;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Comment> comments;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<NotificationParticipant> participants;
+
     @Column(nullable = false)
     @Builder.Default
     private boolean enabled = true;
@@ -126,6 +134,22 @@ public class User implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() {
         return enabled;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public List<NotificationParticipant> getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(List<NotificationParticipant> participants) {
+        this.participants = participants;
     }
 
 }

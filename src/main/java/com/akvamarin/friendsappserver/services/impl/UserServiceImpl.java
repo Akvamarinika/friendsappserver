@@ -1,12 +1,15 @@
 package com.akvamarin.friendsappserver.services.impl;
+
 import com.akvamarin.friendsappserver.domain.dto.AuthUserSocialDTO;
+import com.akvamarin.friendsappserver.domain.dto.request.UserDTO;
 import com.akvamarin.friendsappserver.domain.dto.response.ViewUserDTO;
 import com.akvamarin.friendsappserver.domain.dto.response.ViewUserSlimDTO;
 import com.akvamarin.friendsappserver.domain.entity.User;
+import com.akvamarin.friendsappserver.domain.entity.event.NotificationParticipant;
 import com.akvamarin.friendsappserver.domain.entity.location.City;
-import com.akvamarin.friendsappserver.repositories.UserRepository;
-import com.akvamarin.friendsappserver.domain.dto.request.UserDTO;
 import com.akvamarin.friendsappserver.domain.mapper.UserMapper;
+import com.akvamarin.friendsappserver.repositories.NotificationParticipantRepository;
+import com.akvamarin.friendsappserver.repositories.UserRepository;
 import com.akvamarin.friendsappserver.repositories.location.CityRepository;
 import com.akvamarin.friendsappserver.services.CityService;
 import com.akvamarin.friendsappserver.services.UserService;
@@ -30,6 +33,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final NotificationParticipantRepository notificationParticipantRepository;
     private final CityService cityService;
     private final CityRepository cityRepository;
     private final UserMapper userMapper;
@@ -148,14 +152,26 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean deleteById(long id) {
-        boolean isDeletedUser = userRepository.findById(id)
-                .map(user -> {
-                    userRepository.deleteById(user.getId());
-                    return true;
-                }).orElseThrow(() -> new EntityNotFoundException("User with ID " + id + " not found"));
-        log.info("Method *** deleteById *** : isDeletedUser = {} with ID = {}", isDeletedUser, id);
-        return isDeletedUser;
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isEmpty()) {
+            throw new EntityNotFoundException("User with ID " + id + " not found");
+        }
+
+        User user = userOptional.get();
+
+        // remove user's events, participant
+        List<NotificationParticipant> participants = user.getParticipants();
+        for (NotificationParticipant participant : participants) {
+            participant.setEvent(null); // set event reference to null FK
+            notificationParticipantRepository.delete(participant);
+        }
+
+        userRepository.deleteById(id);
+
+        log.info("Method *** deleteById ***: User with ID = {} has been deleted", id);
+        return true;
     }
+
 
     @Transactional
     @Override

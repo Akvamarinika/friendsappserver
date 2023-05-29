@@ -8,12 +8,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -53,4 +56,9 @@ public class NotificationParticipant {
 
     @Builder.Default
     private boolean participantViewed = false;
+
+    @OneToMany(mappedBy = "event")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private List<NotificationParticipant> participants;
+
 }

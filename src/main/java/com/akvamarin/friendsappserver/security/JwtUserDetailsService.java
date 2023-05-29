@@ -2,7 +2,6 @@ package com.akvamarin.friendsappserver.security;
 
 import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.repositories.UserRepository;
-import com.akvamarin.friendsappserver.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,17 +24,11 @@ public class JwtUserDetailsService implements UserDetailsService {
     public User loadUserByUsername(String login) throws UsernameNotFoundException { // генерирует user по login(username)
         User user;
 
-        if (login.matches(Constants.PATTERN_EMAIL)){
-            user = userRepository
-                    .findByEmail(login)
-                    .orElseThrow(() -> new UsernameNotFoundException(String.format("Email: %s, not found", login)));
-            log.info("Method *** loadUserByUsername *** : JWT User with username(email) = {}", login);
-        } else {
-            user = userRepository
-                    .findByVkId(login)
-                    .orElseThrow(() -> new UsernameNotFoundException(String.format("VK ID: %s, not found", login)));
-                    log.info("Method *** loadUserByUsername *** : JWT User with username(VK ID) = {}", login);
-        }
+        user = userRepository
+                .findUserByUsername(login)
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("Email / vkID: %s, not found", login)));
+        log.info("Method *** loadUserByUsername *** : JWT User with username(Email / vkID) = {}", login);
+
         return user;
     }
 }
