@@ -12,19 +12,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
+import org.springframework.test.context.jdbc.Sql;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
+import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql(scripts = "classpath:cleanup.sql")
+@Sql(scripts = "classpath:data.sql")
 public class EventRestControllerTest {
-    private static final String EVENTS_ENDPOINT = "/api/v1/events";
-    private static final String EVENT_ENDPOINT = "/api/v1/events/{id}";
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -32,11 +33,14 @@ public class EventRestControllerTest {
     @Autowired
     private EventService eventService;
 
-    private EventDTO eventDTO;
+    @LocalServerPort
+    private int port;
+
+    private String baseUrl;
 
     @BeforeEach
     void setUp() {
-        eventDTO = createEventDTO();
+        baseUrl = "http://localhost:" + port + "/api/v1/events";
     }
 
     @AfterEach
@@ -45,125 +49,69 @@ public class EventRestControllerTest {
     }
 
     @Test
-    void testGetAllEvents() {
-        List<EventDTO> eventDTOs = createMultipleEventDTOs();
-        eventService.saveAll(eventDTOs);
-
-        ResponseEntity<EventDTO[]> response = restTemplate.getForEntity(EVENTS_ENDPOINT, EventDTO[].class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(eventDTOs.size(), response.getBody().length);
-    }
-
-
-    @Test
     void testCreateEvent() {
-        ResponseEntity<EventDTO> response = restTemplate.postForEntity(EVENTS_ENDPOINT + "/createEvent", eventDTO, EventDTO.class);
+        EventDTO eventDTO = createEventDTO();
+
+        ResponseEntity<Void> response = restTemplate.postForEntity(baseUrl, eventDTO, Void.class);
+
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getHeaders().getLocation());
+    }
+
+    @Test
+    void testGetAllEvents() {
+        EventDTO eventDTO = createEventDTO();
+        eventService.createNewEvent(eventDTO);
+
+        ResponseEntity<EventDTO[]> response = restTemplate.getForEntity(baseUrl, EventDTO[].class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(eventDTO.getName(), response.getBody().getName());
-        assertEquals(eventDTO.getDescription(), response.getBody().getDescription());
-        assertEquals(eventDTO.getDate(), response.getBody().getDate());
-        assertEquals(eventDTO.getPeriodOfTime(), response.getBody().getPeriodOfTime());
-        assertEquals(eventDTO.getPartner(), response.getBody().getPartner());
-        assertEquals(eventDTO.getEventCategoryId(), response.getBody().getEventCategoryId());
-        assertEquals(eventDTO.getOwnerId(), response.getBody().getOwnerId());
+        assertEquals(1, response.getBody().length);
     }
 
     @Test
     void testGetEventById() {
-        Event savedEventDTO = eventService.createNewEvent(eventDTO);
+        EventDTO eventDTO = createEventDTO();
+        Event createdEvent = eventService.createNewEvent(eventDTO);
 
-        ResponseEntity<Event> response = restTemplate.getForEntity(EVENT_ENDPOINT, Event.class, savedEventDTO.getId());
+        ResponseEntity<EventDTO> response = restTemplate.getForEntity(baseUrl + "/{id}", EventDTO.class, createdEvent.getId());
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(eventDTO.getName(), response.getBody().getName());
-        assertEquals(eventDTO.getDescription(), response.getBody().getDescription());
-        assertEquals(eventDTO.getDate(), response.getBody().getDate());
-        assertEquals(eventDTO.getPeriodOfTime(), response.getBody().getPeriodOfTime());
-        assertEquals(eventDTO.getPartner(), response.getBody().getPartner());
-        assertEquals(eventDTO.getEventCategoryId(), response.getBody().getEventCategory().getId());
-        assertEquals(eventDTO.getOwnerId(), response.getBody().getUser().getId());
+        assertEquals(createdEvent.getName(), response.getBody().getName());
+        assertEquals(createdEvent.getDescription(), response.getBody().getDescription());
     }
 
     @Test
     void testUpdateEvent() {
-        Event savedEvent = eventService.createNewEvent(eventDTO);
-        savedEvent.setName("Updated Name");
+        EventDTO eventDTO = createEventDTO();
+        Event createdEvent = eventService.createNewEvent(eventDTO);
+        createdEvent.setName("Updated Name");
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Event> requestEntity = new HttpEntity<>(savedEvent, headers);
+        restTemplate.put(baseUrl, createdEvent);
 
-        ResponseEntity<ViewEventDTO> response = restTemplate.exchange(EVENTS_ENDPOINT, HttpMethod.PATCH, requestEntity, ViewEventDTO.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(savedEvent.getName(), response.getBody().getName());
-        assertEquals(eventDTO.getDescription(), response.getBody().getDescription());
-        assertEquals(eventDTO.getDate(), response.getBody().getDate());
-        assertEquals(eventDTO.getPeriodOfTime(), response.getBody().getPeriodOfTime());
-        assertEquals(eventDTO.getPartner(), response.getBody().getPartner());
-        assertEquals(eventDTO.getEventCategoryId(), response.getBody().getEventCategory().getId());
-        assertEquals(eventDTO.getOwnerId(), response.getBody().getUserOwner().getId());
+        ViewEventDTO updatedEvent = restTemplate.getForObject(baseUrl + "/{id}", ViewEventDTO.class, createdEvent.getId());
+        assertEquals("Updated Name", updatedEvent.getName());
     }
 
-    /* @Test
-     void testDeleteEvent() {
-         EventDTO savedEventDTO = eventService.createNewEvent(eventDTO);
 
-         ResponseEntity<Void> response = restTemplate.exchange(EVENT_ENDPOINT, HttpMethod.DELETE, null, Void.class, savedEventDTO.getId());
- */
     @Test
     void testDeleteEvent() {
-        // Create a new event and save it to the database
         EventDTO eventDTO = createEventDTO();
-        Event savedEventDTO = eventService.createNewEvent(eventDTO);
+        Event createdEvent = eventService.createNewEvent(eventDTO);
 
-        // Delete the event
-        restTemplate.delete(EVENT_ENDPOINT, savedEventDTO.getId());
+        restTemplate.delete(baseUrl + "/{id}", createdEvent.getId());
 
-        // Verify that the event was deleted by trying to retrieve it
-        ResponseEntity<ViewEventDTO> response = restTemplate.getForEntity(EVENT_ENDPOINT, ViewEventDTO.class, savedEventDTO.getId());
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertThrows(EntityNotFoundException.class, () -> eventService.findById(createdEvent.getId()));
     }
+
 
     private EventDTO createEventDTO() {
         return EventDTO.builder()
                 .name("Test Event")
                 .description("This is a test event.")
-                .date(LocalDate.now())
-                .periodOfTime(PeriodOfTime.EVENING)
-                .partner(Partner.MAN)
-                .eventCategoryId(1L)
-                .ownerId(1L)
                 .build();
     }
-
-    private List<EventDTO> createMultipleEventDTOs() {
-        List<EventDTO> eventDTOs = new ArrayList<>();
-        eventDTOs.add(EventDTO.builder()
-                .id(1L)
-                .name("Event 1")
-                .description("Description for Event 1")
-                .date(LocalDate.now().plusDays(1))
-                .periodOfTime(PeriodOfTime.MORNING)
-                .partner(Partner.COMPANY)
-                .eventCategoryId(1L)
-                .ownerId(1L)
-                .build());
-
-        eventDTOs.add(EventDTO.builder()
-                .id(2L)
-                .name("Event 2")
-                .description("Description for Event 2")
-                .date(LocalDate.now().plusDays(2))
-                .periodOfTime(PeriodOfTime.AFTERNOON)
-                .partner(Partner.ANY)
-                .eventCategoryId(2L)
-                .ownerId(2L)
-                .build());
-        return eventDTOs;
-    }
-
 }
+

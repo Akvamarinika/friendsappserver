@@ -1,5 +1,6 @@
 package com.akvamarin.friendsappserver.unittest;
 
+import com.akvamarin.friendsappserver.domain.dto.EventCategoryDTO;
 import com.akvamarin.friendsappserver.domain.dto.request.EventDTO;
 import com.akvamarin.friendsappserver.domain.dto.response.ViewEventDTO;
 import com.akvamarin.friendsappserver.domain.entity.User;
@@ -7,11 +8,13 @@ import com.akvamarin.friendsappserver.domain.entity.event.Event;
 import com.akvamarin.friendsappserver.domain.entity.event.EventCategory;
 import com.akvamarin.friendsappserver.domain.enums.Partner;
 import com.akvamarin.friendsappserver.domain.enums.PeriodOfTime;
+import com.akvamarin.friendsappserver.domain.mapper.event.EventCategoryMapper;
 import com.akvamarin.friendsappserver.domain.mapper.event.EventMapper;
 import com.akvamarin.friendsappserver.repositories.EventCategoryRepository;
 import com.akvamarin.friendsappserver.repositories.EventRepository;
 import com.akvamarin.friendsappserver.repositories.UserRepository;
 import com.akvamarin.friendsappserver.services.impl.EventServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,6 +35,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class EventServiceTest {
     private static final long EVENT_ID = 1L;
+    private static final long CATEGORY_ID = 1L;
 
     @Mock
     private EventRepository eventRepository;
@@ -45,8 +49,21 @@ public class EventServiceTest {
     @Mock
     private EventMapper eventMapper;
 
+    @Mock
+    private EventCategoryMapper eventCategoryMapper;
+
     @InjectMocks
     private EventServiceImpl eventService;
+
+    @BeforeEach
+    void setup() {
+        EventCategory eventCategory = new EventCategory();
+        eventCategory.setId(1L);
+        eventCategory.setName("Category #1");
+
+        categoryRepository.save(eventCategory);
+    }
+
 
     @Test
     void createNewEvent_validInput_returnCreatedEvent() {
@@ -166,13 +183,14 @@ public class EventServiceTest {
      * */
     @Test
     void updateEvent_validInput_returnUpdatedEvent() {
-        EventDTO eventDTO = new EventDTO();
-        eventDTO.setId(EVENT_ID);
-        eventDTO.setName("Updated name for Event");
-
         Event existingEvent = new Event();
         existingEvent.setId(EVENT_ID);
         existingEvent.setName("Original name for Event");
+
+        EventDTO eventDTO = new EventDTO();
+        eventDTO.setId(EVENT_ID);
+        eventDTO.setName("Updated name for Event");
+        eventDTO.setEventCategoryId(CATEGORY_ID);
 
         ViewEventDTO expectedEventDTO = new ViewEventDTO();
         expectedEventDTO.setId(EVENT_ID);
@@ -182,14 +200,29 @@ public class EventServiceTest {
         when(eventRepository.save(existingEvent)).thenReturn(existingEvent);
         when(eventMapper.toDTO(existingEvent)).thenReturn(expectedEventDTO);
 
+        EventCategory eventCategory = new EventCategory();
+        eventCategory.setId(CATEGORY_ID);
+        eventCategory.setName("Event Category Name");
+
+        EventCategoryDTO eventCategoryDTO = new EventCategoryDTO();
+        eventCategoryDTO.setId(CATEGORY_ID);
+        eventCategoryDTO.setName("Event Category Name");
+
+        when(eventCategoryMapper.toDTO(eventCategory)).thenReturn(eventCategoryDTO);
+
         // Actual
         ViewEventDTO updatedEventDTO = eventService.updateEvent(eventDTO);
 
+        // Expected expectedEventDTO
         assertNotNull(updatedEventDTO);
         assertEquals(expectedEventDTO.getId(), updatedEventDTO.getId());
         assertEquals(expectedEventDTO.getName(), updatedEventDTO.getName());
-        verify(eventMapper).updateEntity(eventDTO, existingEvent);
+        assertEquals(expectedEventDTO.getEventCategory(), eventCategoryDTO);
+
+        verify(eventRepository).findById(EVENT_ID);
         verify(eventRepository).save(existingEvent);
+        verify(eventMapper).toDTO(existingEvent);
+        verify(eventCategoryMapper).toDTO(eventCategory);
     }
 
     /**
@@ -224,18 +257,6 @@ public class EventServiceTest {
         verify(eventRepository).deleteById(EVENT_ID);
     }
 
-    /*
-    @Test
-    public void deleteById_exceptionThrown_returnFalse() {
-        when(eventRepository.findById(anyLong())).thenReturn(java.util.Optional.of(new Event()));
-        doThrow(new RuntimeException("Test exception")).when(eventRepository).deleteById(anyLong());
-
-        // Actual
-        boolean isDeleted = eventService.deleteById(EVENT_ID);
-
-        assertFalse(isDeleted);
-    }
-    */
 
     /**
      *  когда нет мероприятия для удаления
