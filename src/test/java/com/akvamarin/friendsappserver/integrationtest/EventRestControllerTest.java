@@ -3,8 +3,6 @@ package com.akvamarin.friendsappserver.integrationtest;
 import com.akvamarin.friendsappserver.domain.dto.request.EventDTO;
 import com.akvamarin.friendsappserver.domain.dto.response.ViewEventDTO;
 import com.akvamarin.friendsappserver.domain.entity.event.Event;
-import com.akvamarin.friendsappserver.domain.enums.Partner;
-import com.akvamarin.friendsappserver.domain.enums.PeriodOfTime;
 import com.akvamarin.friendsappserver.services.EventService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,13 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 
 import javax.persistence.EntityNotFoundException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
