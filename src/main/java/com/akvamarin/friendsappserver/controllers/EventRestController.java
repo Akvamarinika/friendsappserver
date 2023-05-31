@@ -123,6 +123,7 @@ public class EventRestController {
     )
     @PostMapping(value = "/filter", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ViewEventDTO> filterEvents(@RequestBody EventFilter eventFilter) {
+        log.info("Method *** filterEvents *** : eventFilter = {} ", eventFilter);
         return eventService.filterEvents(eventFilter);
     }
 

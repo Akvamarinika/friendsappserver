@@ -1,6 +1,6 @@
 
 plugins {
-	id 'org.springframework.boot' version '2.6.7'	//2.7.0
+	id 'org.springframework.boot' version '2.6.7'   //2.7.0
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 }
@@ -9,8 +9,8 @@ group = 'com.akvamarin.friendsappserver'
 version = '0.0.1-SNAPSHOT'
 
 java{
-	sourceCompatibility = JavaVersion.VERSION_15
-	targetCompatibility = JavaVersion.VERSION_15
+	sourceCompatibility = JavaVersion.VERSION_14
+	targetCompatibility = JavaVersion.VERSION_14
 }
 
 repositories {

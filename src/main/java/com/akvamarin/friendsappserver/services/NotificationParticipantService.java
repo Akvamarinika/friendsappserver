@@ -6,6 +6,7 @@ import com.akvamarin.friendsappserver.domain.dto.response.ViewEventDTO;
 import com.akvamarin.friendsappserver.domain.dto.response.ViewNotificationDTO;
 import com.akvamarin.friendsappserver.domain.dto.response.ViewUserSlimDTO;
 import com.akvamarin.friendsappserver.domain.entity.event.NotificationParticipant;
+import com.akvamarin.friendsappserver.domain.enums.ParticipantFilterType;
 
 import java.util.List;
 
@@ -19,6 +20,8 @@ public interface NotificationParticipantService {
     void deleteParticipantRequest(Long requestId);
 
     List<ViewEventDTO> findUserEventsWithApprovedFeedbackAndOrganizer(Long userId);
+
+    List<ViewEventDTO> findUserEventsWithApprovedFeedbackAndOrganizer(Long userId, ParticipantFilterType filterType);
 
     List<ViewEventDTO> findUserEventsWithWaitingFeedback(Long userId);
 

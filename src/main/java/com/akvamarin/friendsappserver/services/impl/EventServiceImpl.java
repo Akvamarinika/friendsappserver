@@ -152,6 +152,8 @@ public class EventServiceImpl implements EventService {
                 .filter(event -> matchesPeriodOfTime(event, eventFilter.getPeriodOfTimeList()))
                 .sorted(getEventComparator(eventFilter.getSortingType(), eventFilter.getUserCoords()))
                 .collect(Collectors.toList());
+        log.info("Method *** filterEvents *** : size = {} ", filteredEvents.size());
+        log.info("Method *** filterEvents *** : eventFilter = {} ", eventFilter);
 
         return filteredEvents.stream()
                 .map(eventMapper::toDTO)

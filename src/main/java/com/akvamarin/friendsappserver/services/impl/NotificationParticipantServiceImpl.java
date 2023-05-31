@@ -9,6 +9,7 @@ import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.domain.entity.event.Event;
 import com.akvamarin.friendsappserver.domain.entity.event.NotificationParticipant;
 import com.akvamarin.friendsappserver.domain.enums.FeedbackType;
+import com.akvamarin.friendsappserver.domain.enums.ParticipantFilterType;
 import com.akvamarin.friendsappserver.domain.mapper.UserMapper;
 import com.akvamarin.friendsappserver.domain.mapper.event.EventMapper;
 import com.akvamarin.friendsappserver.domain.mapper.event.NotificationMapper;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -157,28 +159,64 @@ public class NotificationParticipantServiceImpl implements NotificationParticipa
         return allNotifications;
     }
 
+    /** С фильтрацией орг / участник
+     * выбирает все эвенты, где пользователь
+     * является участником, т.е. точно идет на мероприятие
+     */
+    @Transactional(readOnly = true)
+    public List<ViewEventDTO> findUserEventsWithApprovedFeedbackAndOrganizer(Long userId, ParticipantFilterType filterType) {
+        List<ViewEventDTO> userEvents = new ArrayList<>();
+
+        switch (filterType) {
+            case USER_ORGANIZER:
+                List<Event> organizerEvents = eventRepository.findByUserId(userId);
+                userEvents.addAll(organizerEvents.stream()
+                        .map(eventMapper::toDTO)
+                        .collect(Collectors.toList())
+                ); break;
+            case USER_PARTICIPANT:
+                List<NotificationParticipant> participantEvents = notificationParticipantRepository
+                        .findByUserIdAndFeedbackType(userId, FeedbackType.APPROVED);
+
+                userEvents.addAll(participantEvents.stream()
+                        .map(participant -> eventMapper.toDTO(participant.getEvent()))
+                        .collect(Collectors.toList())
+                ); break;
+            case ALL_EVENTS:
+            default:
+                return findUserEventsWithApprovedFeedbackAndOrganizer(userId);
+        }
+
+
+
+
+        userEvents.sort(Comparator.comparing(ViewEventDTO::getDate));
+
+        log.info("Method *** findUserEventsWithApprovedFeedbackAndOrganizer *** : user ID = {}, filterType = {}," +
+                " List<ViewEventDTO> size = {}", userId, filterType, userEvents.size());
+        return userEvents;
+    }
+
     /**
      * выбирает все эвенты, где пользователь
      * является участником, т.е. точно идет на мероприятие
      */
     @Transactional(readOnly = true)
     public List<ViewEventDTO> findUserEventsWithApprovedFeedbackAndOrganizer(Long userId) {
-        List<NotificationParticipant> participantEvents = notificationParticipantRepository
-                .findByUserIdAndFeedbackType(userId, FeedbackType.APPROVED);
-        List<Event> organizerEvents = eventRepository.findByUserId(userId);
-
         List<ViewEventDTO> userEvents = new ArrayList<>();
+        List<Event> allEvents = eventRepository.findByUserId(userId);
+        List<NotificationParticipant> allParticipantEvents = notificationParticipantRepository
+                .findByUserIdAndFeedbackType(userId, FeedbackType.APPROVED);
 
-        for (NotificationParticipant participant : participantEvents) {
-            Event event = participant.getEvent();
-            userEvents.add(eventMapper.toDTO(event));
-        }
+        userEvents.addAll(allEvents.stream()
+                .map(eventMapper::toDTO)
+                .collect(Collectors.toList())
+        );
 
-        for (Event event : organizerEvents) {
-            userEvents.add(eventMapper.toDTO(event));
-        }
-
-        userEvents.sort(Comparator.comparing(ViewEventDTO::getDate));
+        userEvents.addAll(allParticipantEvents.stream()
+                .map(participant -> eventMapper.toDTO(participant.getEvent()))
+                .collect(Collectors.toList())
+        );
 
         log.info("Method *** findUserEventsWithApprovedFeedbackAndOrganizer *** : user ID = {} List<ViewEventDTO> size = {}",
                 userId, userEvents.size());

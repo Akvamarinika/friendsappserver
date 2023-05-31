@@ -7,6 +7,7 @@ import com.akvamarin.friendsappserver.domain.dto.response.ViewEventDTO;
 import com.akvamarin.friendsappserver.domain.dto.response.ViewNotificationDTO;
 import com.akvamarin.friendsappserver.domain.dto.response.ViewUserSlimDTO;
 import com.akvamarin.friendsappserver.domain.entity.event.NotificationParticipant;
+import com.akvamarin.friendsappserver.domain.enums.ParticipantFilterType;
 import com.akvamarin.friendsappserver.services.NotificationParticipantService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -88,6 +89,19 @@ public class NotificationParticipantController {
         return notificationParticipantService.findNotificationsByUserId(userId);
     }
 
+    @Operation(
+            summary = "Find user events with approved feedback and organizer (with filtering)",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Event participants found", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ViewUserSlimDTO.class)))),
+                    @ApiResponse(responseCode = "404", description = "Event not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            }
+    )
+    @GetMapping("/participant/{userId}/filter")
+    public List<ViewEventDTO> findUserEventsWithApprovedFeedbackAndOrganizer(
+            @PathVariable Long userId,
+            @RequestParam ParticipantFilterType filterType) {
+        return notificationParticipantService.findUserEventsWithApprovedFeedbackAndOrganizer(userId, filterType);
+    }
 
     @Operation(
             summary = "Find user events with approved feedback and organizer",
