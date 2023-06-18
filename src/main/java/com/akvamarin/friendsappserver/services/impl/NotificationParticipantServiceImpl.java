@@ -31,6 +31,19 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Сервис по работе с заявками,
+ * уведомлениями на мероприятия и участниками.
+ *
+ * @see NotificationParticipant
+ * @see UserRepository
+ * @see EventRepository
+ * @see NotificationParticipantRepository
+ * @see NotificationMapper
+ * @see EventMapper
+ * @see UserMapper
+ * */
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -49,8 +62,10 @@ public class NotificationParticipantServiceImpl implements NotificationParticipa
     private final UserMapper userMapper;
 
     /**
-     * пользователь подал заявку на участие
-     * в эвенте (нажал на кнопку)
+     * Создает новую заявку от пользователя на участие в мероприятии.
+     *
+     * @param notificationDTO информация о заявке
+     * @return NotificationParticipant - созданная заявка на участие
      */
     @Transactional
     public NotificationParticipant createParticipantRequest(NotificationDTO notificationDTO) {
@@ -87,8 +102,10 @@ public class NotificationParticipantServiceImpl implements NotificationParticipa
     }
 
     /**
-     * орг обновляет статус заявки
-     * одобряет или отклоняет
+     * Обновляет статус заявки (одобряет или отклоняет) организатор.
+     *
+     * @param notificationFeedbackDTO информация об обновлении статуса заявки
+     * @return обновленная информация о заявке
      */
     @Transactional
     public ViewNotificationDTO updateFeedbackStatus(NotificationFeedbackDTO notificationFeedbackDTO) {
@@ -109,8 +126,9 @@ public class NotificationParticipantServiceImpl implements NotificationParticipa
     }
 
     /**
-     * отмена заявки на эвент пользователем
-     * (пользователь (не орг) повторно нажал на кнопку)
+     * Пользователь отменяет заявку на участие в мероприятии.
+     *
+     * @param requestId идентификатор заявки
      */
     @Transactional
     public void deleteParticipantRequest(Long requestId) {
@@ -120,9 +138,12 @@ public class NotificationParticipantServiceImpl implements NotificationParticipa
 
 
     /**
-     * неподтвержденные заявки как для орга и
-     * и результат заявок как для участника
-     * для конкретного пользователя (не были закрыты на кнопку)
+     * Неподтвержденные заявки как для организатора, так и результат заявок для участника
+     * для конкретного пользователя (не были закрыты по кнопке)
+     *
+     * @param userId идентификатор пользователя
+     * @return список объектов ViewNotificationDTO представляющих уведомления пользователя
+     * @throws EntityNotFoundException если пользователь не найден
      */
     @Transactional(readOnly = true)
     public List<ViewNotificationDTO> findNotificationsByUserId(Long userId) {
@@ -159,9 +180,13 @@ public class NotificationParticipantServiceImpl implements NotificationParticipa
         return allNotifications;
     }
 
-    /** С фильтрацией орг / участник
-     * выбирает все эвенты, где пользователь
-     * является участником, т.е. точно идет на мероприятие
+    /**
+     * С фильтрацией организатор / участник. Выбирает все мероприятия, где пользователь является участником.
+     *
+     * @param userId - идентификатор пользователя
+     * @param filterType тип фильтра (USER_ORGANIZER, USER_PARTICIPANT, ALL_EVENTS)
+     * @return список объектов ViewEventDTO представляющих мероприятия на которые
+     * пользователь точно идет
      */
     @Transactional(readOnly = true)
     public List<ViewEventDTO> findUserEventsWithApprovedFeedbackAndOrganizer(Long userId, ParticipantFilterType filterType) {
@@ -198,8 +223,11 @@ public class NotificationParticipantServiceImpl implements NotificationParticipa
     }
 
     /**
-     * выбирает все эвенты, где пользователь
-     * является участником, т.е. точно идет на мероприятие
+     * Выбирает все мероприятия, где пользователь является участником.
+     *
+     * @param userId - идентификатор пользователя
+     * @return список объектов ViewEventDTO представляющих мероприятия на которые
+     *пользователь точно идет
      */
     @Transactional(readOnly = true)
     public List<ViewEventDTO> findUserEventsWithApprovedFeedbackAndOrganizer(Long userId) {
@@ -224,8 +252,10 @@ public class NotificationParticipantServiceImpl implements NotificationParticipa
     }
 
     /**
-     * выбирает все эвенты, где пользователь
-     * ждет одобрения от организатора мероприятия
+     * Выбирает все мероприятия, где пользователь ожидает одобрения заявки от организатора.
+     *
+     * @param userId - идентификатор пользователя
+     * @return список объектов ViewEventDTO представляющих мероприятия, где пользователь ожидает одобрения заявки
      */
     @Transactional(readOnly = true)
     public List<ViewEventDTO> findUserEventsWithWaitingFeedback(Long userId) {
@@ -245,8 +275,10 @@ public class NotificationParticipantServiceImpl implements NotificationParticipa
     }
 
     /**
-     * выбирает всех участников одного эвента
-     * в том числе и организатора
+     * Выбирает всех участников одного мероприятия, включая организатора.
+     *
+     * @param eventId - идентификатор мероприятия
+     * @return список объектов ViewUserSlimDTO представляющих основную информацию об участниках мероприятия
      */
     @Transactional(readOnly = true)
     public List<ViewUserSlimDTO> findEventParticipantsWithApprovedFeedback(Long eventId) {
@@ -271,9 +303,12 @@ public class NotificationParticipantServiceImpl implements NotificationParticipa
         return eventParticipants;
     }
 
-    /** ( Не понадобился, см. метод updateFeedbackStatus() )
-     * отвечает за вывод заявок оргу
-     * если орг нажал кнопку "закрыть" == true
+    /**
+     * Обновляет флаг просмотра заявки организатором.
+     *
+     * @param requestId     идентификатор заявки
+     * @param ownerViewed   значение флага просмотра
+     * @throws EntityNotFoundException, если заявка не найдена
      */
     @Transactional
     public void updateOwnerViewed(Long requestId, boolean ownerViewed) {
@@ -282,12 +317,15 @@ public class NotificationParticipantServiceImpl implements NotificationParticipa
 
         notificationParticipant.setOwnerViewed(ownerViewed);
         notificationParticipantRepository.save(notificationParticipant);
-        log.info("Method *** updateOwnerViewed *** : notification with ID = {}, ownerViewed = {}", requestId, ownerViewed);
+        log.info("Method *** /updateOwnerViewed/ *** : notification with ID = {}, ownerViewed = {}", requestId, ownerViewed);
     }
 
     /**
-     * отвечает за вывод заявок-ответов пользователю
-     * если пользователь нажал кнопку "закрыть" == true
+     * Обновляет флаг просмотра заявки пользователем.
+     *
+     * @param requestId - идентификатор заявки
+     * @param participantViewed - значение флага просмотра
+     * @throws EntityNotFoundException, если заявка не найдена
      */
     @Transactional
     public void updateParticipantViewed(Long requestId, boolean participantViewed) {
@@ -299,6 +337,12 @@ public class NotificationParticipantServiceImpl implements NotificationParticipa
         log.info("Method *** updateParticipantViewed *** : notification with ID = {}, participantViewed = {}", requestId, participantViewed);
     }
 
+    /**
+     * Проверяет существование уведомления.
+     *
+     * @param notificationDTO объект с eventId и userId
+     * @return true, если уведомление существует, false - не существует
+     */
     @Transactional(readOnly = true)
     public boolean isExistNotification(NotificationDTO notificationDTO) {
         Long eventId = notificationDTO.getEventId();
@@ -309,8 +353,12 @@ public class NotificationParticipantServiceImpl implements NotificationParticipa
     }
 
     /**
-     * ищет заявку участника по
-     * конкретному мероприятию
+     * Ищет заявку участника для конкретного мероприятия.
+     *
+     * @param eventId - идентификатор мероприятия
+     * @param userId - идентификатор пользователя
+     * @return объект ViewNotificationDTO представляющий заявку участника
+     * @throws EntityNotFoundException если заявка не найдена
      */
     @Transactional(readOnly = true)
     public ViewNotificationDTO findNotificationByUserIdEventId(Long eventId, Long userId) {
@@ -322,6 +370,4 @@ public class NotificationParticipantServiceImpl implements NotificationParticipa
 
         return notificationMapper.toDTO(notificationParticipant);
     }
-
-
 }

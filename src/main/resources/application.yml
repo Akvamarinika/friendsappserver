@@ -1,5 +1,5 @@
 server:
-  address: 192.168.1.33
+  address: localhost #192.168.1.33
   port: 9000
   error:
     include-message: always
@@ -51,8 +51,8 @@ vk:
   properties:
     version: 5.131
     url-secure: https://api.vk.com/method/secure.checkToken
-    access-token: 2c4d0e082c4d0e082c4d0e08602c31d42722c4d2c4d0e084eda30bd8995bc2db8551c5b
-    secret-key: wlTS9TrsotgYppnRRMv7
+    access-token: my-access-token
+    secret-key: my-secret-key
 
 
 

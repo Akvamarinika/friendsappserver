@@ -51,19 +51,8 @@ dependencies {
 	implementation group: 'org.projectlombok', name: 'lombok-mapstruct-binding', version: '0.2.0'
 	annotationProcessor group: 'org.projectlombok', name: 'lombok-mapstruct-binding', version: '0.2.0'
 
-
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-
-
-	//<!-- Unit тестирование -->
-	// https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
-	//testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
-	//testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
-	//testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.2.0'
-
-
-
 
 	testCompileOnly 'org.projectlombok:lombok:1.18.24'
 	testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
@@ -75,7 +64,6 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.modelmapper/modelmapper
 	//implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.1.1'
 
-
 	// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui
 	implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
 
@@ -84,7 +72,6 @@ dependencies {
 
 	//<!-- For upload Excel -->
 	implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.3'
-
 	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
 }

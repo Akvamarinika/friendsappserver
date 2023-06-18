@@ -23,6 +23,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -30,9 +31,21 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.validation.ValidationException;
 import java.net.URI;
 
+/**
+ * Сервис для регистрации, авторизации
+ * и аутентификации пользователей
+ *
+ * @see User
+ * @see UserService
+ * @see JwtUserDetailsService
+ * @see JwtTokenProvider
+ * @see AuthenticationManager
+ * @see PasswordEncoder
+ * */
+
 @Slf4j
 @Service
-@RequiredArgsConstructor    //конструктор с 1 параметром для каждого поля
+@RequiredArgsConstructor
 public class AuthenticationUserServiceImpl implements AuthenticationUserService {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
@@ -40,6 +53,12 @@ public class AuthenticationUserServiceImpl implements AuthenticationUserService 
     private final JwtUserDetailsService userDetailsService;
     private final VkProperties vkProperties;
 
+    /**
+     * Регистрация нового пользователя.
+     *
+     * @param userDTO - содержит информацию о пользователе
+     * @return User - возвращает информацию о зарегистрированном пользователе
+     */
     @Override
     public User registration(@NonNull UserDTO userDTO) {
         log.info("Method *** register *** : User login = {}", userDTO.getUsername());
@@ -48,6 +67,12 @@ public class AuthenticationUserServiceImpl implements AuthenticationUserService 
         return registeredUser;
     }
 
+    /**
+     * Метод выполняет аутентификацию пользователя.
+     *
+     * @param authUserParamDTO - содержит логин и пароль
+     * @return AuthServerToken - содержит токен
+     */
     @Override
     public AuthServerToken authentication(@NonNull AuthUserParamDTO authUserParamDTO) {
         log.info("Method *** authentication *** : User login = {}", authUserParamDTO.getUsername());
@@ -65,7 +90,14 @@ public class AuthenticationUserServiceImpl implements AuthenticationUserService 
         return new AuthServerToken (token);
     }
 
-    //VK
+    /**
+     * Выполняет аутентификацию пользователя при помощи OAuth2
+     * с социальной сетью "ВКонтакте".
+     *
+     * @param userSocialDTO - содержит информацию о пользователе из социальной сети
+     * @return AuthServerToken - содержит токен
+     * @throws ValidationException, если токен VK недействителен
+     */
     @Override
     public AuthServerToken authOAuth2(@NonNull AuthUserSocialDTO userSocialDTO) {
         log.info("Method *** authOAuth2 *** : User login = {}", userSocialDTO.getUsername());
@@ -97,7 +129,14 @@ public class AuthenticationUserServiceImpl implements AuthenticationUserService 
         throw new ValidationException("Token VK is invalid.");
     }
 
-    //проверка ВК токена
+    /**
+     * Отправляет запрос в соц. сеть "ВКонтакте" для валидации токена пользователя.
+     *
+     * @param userSocialDTO - содержит информацию о пользователе из социальной сети
+     * @return CheckTokenVkResponse, содержит ответ проверки токена
+     * @throws JsonProcessingException, если во время обработки JSON возникает ошибка
+     * @throws ValidationException, если токен VK недействителен
+     */
     private CheckTokenVkResponse requestTokenUserVK(AuthUserSocialDTO userSocialDTO) throws JsonProcessingException {
         RestTemplate restTemplate = new RestTemplate();
 

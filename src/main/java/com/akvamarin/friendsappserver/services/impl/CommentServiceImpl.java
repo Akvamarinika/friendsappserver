@@ -21,6 +21,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Сервис по работе с комментариями пользователей, оставленных
+ * к мероприятиям, взаимодействует с CommentRepository, EventRepository, UserRepository.
+ *
+ * @see Event
+ * @see CommentRepository
+ * @see EventRepository
+ * @see UserRepository
+ * @see CommentMapper
+ * */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -31,6 +41,14 @@ public class CommentServiceImpl implements CommentService {
     private final UserRepository userRepository;
     private final CommentMapper commentMapper;
 
+    /**
+     * Создает комментарий для мероприятия.
+     *
+     * @param eventId - идентификатор мероприятия
+     * @param commentDTO - комментарий пользователя DTO
+     * @return созданный комментарий
+     * @throws EntityNotFoundException, если мероприятие или пользователь не найдены
+     */
     @Transactional
     @Override
     public CommentDTO createComment(Long eventId, CommentDTO commentDTO) {
@@ -48,6 +66,13 @@ public class CommentServiceImpl implements CommentService {
         return commentMapper.toDTO(savedComment);
     }
 
+    /**
+     * Возвращает комментарий по его идентификатору.
+     *
+     * @param commentId - идентификатор комментария
+     * @return комментарий DTO
+     * @throws EntityNotFoundException, если комментарий не найден
+     */
     @Transactional
     @Override
     public ViewCommentDTO findCommentById(Long commentId) {
@@ -56,6 +81,13 @@ public class CommentServiceImpl implements CommentService {
         return commentMapper.toViewDTO(comment);
     }
 
+    /**
+     * Возвращает список всех комментариев для указанного мероприятия.
+     *
+     * @param eventId - идентификатор мероприятия
+     * @return список комментариев DTO
+     * @throws EntityNotFoundException, если мероприятие не найдено
+     */
     @Transactional
     @Override
     public List<ViewCommentDTO> getAllCommentsByEventId(Long eventId) {
@@ -66,6 +98,12 @@ public class CommentServiceImpl implements CommentService {
         return comments.stream().map(commentMapper::toViewDTO).collect(Collectors.toList());
     }
 
+    /**
+     * Возвращает список всех комментариев для указанного пользователя.
+     *
+     * @param userId - идентификатор пользователя
+     * @return список комментариев DTO
+     */
     @Transactional
     @Override
     public List<CommentDTO> getAllCommentsForUser(Long userId) {
@@ -75,12 +113,25 @@ public class CommentServiceImpl implements CommentService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Удаляет комментарий по его идентификатору.
+     *
+     * @param commentId - идентификатор комментария
+     */
     @Transactional
     @Override
     public void deleteComment(Long commentId) {
         commentRepository.deleteById(commentId);
     }
 
+    /**
+     * Обновляет комментарий по его идентификатору.
+     *
+     * @param commentId - идентификатор комментария
+     * @param commentDTO - комментарий DTO для обновления
+     * @return обновленный комментарий
+     * @throws EntityNotFoundException, если комментарий не найден
+     */
     @Transactional
     @Override
     public ViewCommentDTO updateComment(Long commentId, CommentDTO commentDTO) {
@@ -94,5 +145,4 @@ public class CommentServiceImpl implements CommentService {
         Comment updatedComment = commentRepository.save(comment);
         return commentMapper.toViewDTO(updatedComment);
     }
-
 }

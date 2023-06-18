@@ -28,6 +28,18 @@ import java.util.stream.Collectors;
 
 import static com.akvamarin.friendsappserver.utils.FilterHelper.*;
 
+/**
+ * Сервис для работы с
+ * данными мероприятий, взаимодействует с EventRepository, UserRepository
+ * и EventCategoryRepository.
+ *
+ * @see Event
+ * @see EventRepository
+ * @see UserRepository
+ * @see EventCategoryRepository
+ * @see EventMapper
+ * @see EventCategoryListMapper
+ * */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -43,6 +55,12 @@ public class EventServiceImpl implements EventService {
     private final UserRepository userRepository;
 
 
+    /**
+     * Создает новое мероприятие.
+     *
+     * @param eventDTO - мероприятие DTO
+     * @return Event - созданное мероприятие
+     */
     @Transactional
     @Override
     public Event createNewEvent(@NotNull EventDTO eventDTO) {
@@ -59,6 +77,12 @@ public class EventServiceImpl implements EventService {
         return eventRepository.save(event);
     }
 
+    /**
+     * Сохраняет список мероприятий.
+     *
+     * @param eventDTOs список мероприятий DTO
+     * @return список сохраненных мероприятий
+     */
     @Transactional
     @Override
     public List<Event> saveAll(List<EventDTO> eventDTOs) {
@@ -68,6 +92,11 @@ public class EventServiceImpl implements EventService {
         return eventRepository.saveAll(events);
     }
 
+    /**
+     * Возвращает список всех мероприятий.
+     *
+     * @return список мероприятий DTO
+     */
     @Transactional
     @Override
     public List<ViewEventDTO> findAll() {
@@ -78,6 +107,13 @@ public class EventServiceImpl implements EventService {
         return result;
     }
 
+    /**
+     * Возвращает мероприятие по его идентификатору.
+     *
+     * @param eventId - идентификатор мероприятия
+     * @return мероприятие DTO для отображения на интерфейсе
+     * @throws EntityNotFoundException если мероприятие не найдено
+     */
     @Transactional
     @Override
     public ViewEventDTO findById(long eventId) {
@@ -88,6 +124,13 @@ public class EventServiceImpl implements EventService {
         return result;
     }
 
+    /**
+     * Возвращает мероприятие для отображения на интерфейсе (UI) и обновления, по его идентификатору.
+     *
+     * @param eventId - идентификатор мероприятия
+     * @return мероприятие DTO для отображения на интерфейсе (UI) и обновления
+     * @throws EntityNotFoundException если мероприятие не найдено
+     */
     @Transactional
     @Override
     public ViewEventUpdateDTO findByIdForViewUpdate(long eventId) {
@@ -104,6 +147,13 @@ public class EventServiceImpl implements EventService {
         return result;
     }
 
+    /**
+     * Обновляет мероприятие.
+     *
+     * @param eventDTO - мероприятие для обновления
+     * @return обновленное мероприятие
+     * @throws EntityNotFoundException если мероприятие не найдено
+     */
     @Override
     @Transactional
     public ViewEventDTO updateEvent(@NonNull EventDTO eventDTO) {
@@ -122,6 +172,13 @@ public class EventServiceImpl implements EventService {
         return eventMapper.toDTO(event);
     }
 
+    /**
+     * Удаляет мероприятие по его идентификатору.
+     *
+     * @param eventId - идентификатор мероприятия
+     * @return true, если мероприятие успешно удалено, false - в случае неудачи
+     * @throws EntityNotFoundException если мероприятие не найдено
+     */
     @Override
     @Transactional
     public boolean deleteById(long eventId) {
@@ -134,12 +191,21 @@ public class EventServiceImpl implements EventService {
         return isDeletedEvent;
     }
 
+    /**
+     * Удаляет все мероприятия.
+     */
     @Override
     @Transactional
     public void deleteAll() {
         eventRepository.deleteAll();
     }
 
+    /**
+     * Фильтрует и сортирует мероприятия согласно заданным критериям.
+     *
+     * @param eventFilter - объект фильтра мероприятий
+     * @return отфильтрованный список мероприятий DTO
+     */
     @Transactional
     @Override
     public List<ViewEventDTO> filterEvents(EventFilter eventFilter) {
@@ -159,5 +225,4 @@ public class EventServiceImpl implements EventService {
                 .map(eventMapper::toDTO)
                 .collect(Collectors.toList());
     }
-
 }

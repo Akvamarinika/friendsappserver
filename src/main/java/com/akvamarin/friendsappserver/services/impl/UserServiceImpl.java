@@ -27,7 +27,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
+/**
+ * Сервис для работы с
+ * пользовательскими данными, взаимодействует с UserRepository, CityRepository
+ * и NotificationParticipantRepository.
+ *
+ * @see User
+ * @see UserRepository
+ * @see NotificationParticipantRepository
+ * @see CityRepository
+ * @see CityService
+ * @see PasswordEncoder
+ * @see UserMapper
+ * */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -39,7 +51,13 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    //ВК сохраненение данных польз-ля, если их нет в БД
+    /**
+     * Создает нового пользователя на основе данных, полученных из
+     * социальной сети "ВКонтакте", если пользователя нет в базе данных.
+     *
+     * @param userSocialDTO - содержит информацию о пользователе из социальной сети
+     * @return User - возвращает информацию о зарегистрированном пользователе
+     */
     @Transactional
     @Override
     public User createNewUserVKontakte(@NotNull AuthUserSocialDTO userSocialDTO) {
@@ -60,7 +78,13 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
-    //обычная регист-ия
+    /**
+     * Создает нового пользователя с "классической" регистрацией (почта).
+     *
+     * @param userDTO - содержит пользовательские данные
+     * @return User объект с информацией о зарегистрированном пользователя
+     * @throws ValidationException, если электронная почта уже зарегистрирована
+     */
     @Transactional
     @Override
     public User createNewUser(@NotNull UserDTO userDTO) throws ValidationException {
@@ -89,6 +113,11 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user); //return User from DB
     }
 
+    /**
+     * Получить список всех пользователей.
+     *
+     * @return список из объектов типа ViewUserSlimDTO, представляющих всех пользователей
+     */
     @Transactional
     @Override
     public List<ViewUserSlimDTO> findAll() {
@@ -99,6 +128,13 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    /**
+     * Извлекает пользователя по ID.
+     *
+     * @param userID идентификатор пользователя, которого нужно получить
+     * @return объект типа ViewUserDTO, представляет пользователя с информацией для отображения (UI)
+     * @throws EntityNotFoundException, если пользователь не найден
+     */
     @Transactional
     @Override
     public ViewUserDTO findById(long userID) {
@@ -109,6 +145,13 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    /**
+     * Извлекает пользователя по логину.
+     *
+     * @param login - логин пользователя
+     * @return объект типа ViewUserDTO, представляет пользователя с информацией для отображения (UI)
+     * @throws EntityNotFoundException, если пользователь не найден
+     */
     @Override
     @Transactional
     public ViewUserDTO findByLogin(String login) {
@@ -119,6 +162,13 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    /**
+     * Извлекает пользователя с основной информацией, при входе в систему.
+     *
+     * @param login логин пользователя
+     * @return объект типа ViewUserSlimDTO, представляет пользователя с основной информацией для отображения (UI)
+     * @throws EntityNotFoundException, если пользователь не найден
+     */
     @Override
     @Transactional
     public ViewUserSlimDTO findSlimUserByLogin(String login) {
@@ -129,6 +179,13 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    /**
+     * Обновляет информацию о пользователе.
+     *
+     * @param userDTO - содержит обновленные пользовательские данные
+     * @return обновленный объект User
+     * @throws EntityNotFoundException, если пользователь не найден
+     */
     @Override
     @Transactional
     public User updateUser(@NonNull UserDTO userDTO) {
@@ -149,6 +206,13 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format("User with ID %d not found", userDTO.getId())));
     }
 
+    /**
+     * Удаляет пользователя по ID.
+     *
+     * @param id идентификатор удаляемого пользователя
+     * @return true, если пользователь успешно удален, иначе false
+     * @throws EntityNotFoundException, если пользователь не найден
+     */
     @Override
     @Transactional
     public boolean deleteById(long id) {
@@ -172,7 +236,14 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
-
+    /**
+     * Создает нового пользователя на основе данных, полученных из
+     * социальной сети "ВКонтакте", если пользователя нет в базе данных.
+     *
+     * @param userSocialDTO - содержит данные пользователя из социальной сети "ВКонтакте"
+     * @return созданный объект User
+     * @throws ValidationException, если VK ID или электронная почта уже зарегистрированы
+     */
     @Transactional
     @Override
     public User createNewUserVK(@NotNull AuthUserSocialDTO userSocialDTO) throws ValidationException {
@@ -193,12 +264,16 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user); //return User from DB
     }
 
+    /**
+     * Проверяет, не занято ли имя пользователя.
+     *
+     * @param username имя пользователя для проверки
+     * @return true, если имя пользователя уже занято, иначе false
+     */
     @Transactional(readOnly = true)
     public boolean isUsernameAlreadyTaken(String username) {
         Optional<User> existingUser = userRepository.findUserByUsername(username);
         log.info("Method *** isUsernameAlreadyTaken *** : username = {} existingUser = {}", username, existingUser.isPresent());
         return existingUser.isPresent();
     }
-
-
 }
