@@ -32,8 +32,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Сервис по работе с заявками,
- * уведомлениями на мероприятия и участниками.
+ * Сервис по работе с заявками на мероприятия,
+ * уведомлениями и участниками.
  *
  * @see NotificationParticipant
  * @see UserRepository
@@ -211,9 +211,6 @@ public class NotificationParticipantServiceImpl implements NotificationParticipa
             default:
                 return findUserEventsWithApprovedFeedbackAndOrganizer(userId);
         }
-
-
-
 
         userEvents.sort(Comparator.comparing(ViewEventDTO::getDate));
 

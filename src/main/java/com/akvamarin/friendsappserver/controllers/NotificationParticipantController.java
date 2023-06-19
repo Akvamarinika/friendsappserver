@@ -24,6 +24,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
+/**
+ * Контроллер по работе с заявками на мероприятия,
+ * уведомлениями и участниками, взаимодействует с NotificationParticipantService.
+ *
+ * @see NotificationParticipantService
+ * */
 @RestController
 @RequestMapping("/api/v1/notifications")
 @RequiredArgsConstructor
@@ -32,6 +38,12 @@ public class NotificationParticipantController {
     private final NotificationParticipantService notificationParticipantService;
 
 
+    /**
+     * Создает запрос-заявку на участие.
+     *
+     * @param notificationDTO - уведомление DTO (заявка)
+     * @return ответ без содержимого
+     */
     @Operation(
             summary = "Create participant request",
             responses = {
@@ -52,6 +64,12 @@ public class NotificationParticipantController {
         return ResponseEntity.created(uri).build();
     }
 
+    /**
+     * Обновляет статус заявки.
+     *
+     * @param notificationFeedbackDTO - уведомление содержит тип статуса заявки DTO и ID заявки
+     * @return DTO уведомления с обновленным статусом обратной связи
+     */
     @Operation(
             summary = "Update feedback status",
             responses = {
@@ -64,6 +82,11 @@ public class NotificationParticipantController {
         return notificationParticipantService.updateFeedbackStatus(notificationFeedbackDTO);
     }
 
+    /**
+     * Удаляет запрос на участие.
+     *
+     * @param requestId - идентификатор заявки на участие
+     */
     @Operation(
             summary = "Delete participant request",
             responses = {
@@ -77,6 +100,12 @@ public class NotificationParticipantController {
         notificationParticipantService.deleteParticipantRequest(requestId);
     }
 
+    /**
+     * Находит все заявки по идентификатору пользователя и организатора.
+     *
+     * @param userId - идентификатор пользователя
+     * @return список заявок DTO
+     */
     @Operation(
             summary = "Find all notifications by user and org ID",
             responses = {
@@ -89,6 +118,14 @@ public class NotificationParticipantController {
         return notificationParticipantService.findNotificationsByUserId(userId);
     }
 
+    /**
+     * С фильтрацией организатор / участник. Выбирает все мероприятия, где пользователь является участником.
+     *
+     * @param userId - идентификатор пользователя
+     * @param filterType - тип фильтра (USER_ORGANIZER, USER_PARTICIPANT, ALL_EVENTS)
+     * @return список мероприятий DTO на которые пользователь точно идет
+     * (включая, где пользователь организатор, либо нет. В зависимости от фильтра)
+     */
     @Operation(
             summary = "Find user events with approved feedback and organizer (with filtering)",
             responses = {
@@ -103,6 +140,12 @@ public class NotificationParticipantController {
         return notificationParticipantService.findUserEventsWithApprovedFeedbackAndOrganizer(userId, filterType);
     }
 
+    /**
+     * Выбирает все мероприятия, где пользователь является участником.
+     *
+     * @param userId - идентификатор пользователя
+     * @return список мероприятий DTO на которые пользователь точно идет
+     */
     @Operation(
             summary = "Find user events with approved feedback and organizer",
             responses = {
@@ -115,6 +158,12 @@ public class NotificationParticipantController {
         return notificationParticipantService.findUserEventsWithApprovedFeedbackAndOrganizer(userId);
     }
 
+    /**
+     * Выбирает все мероприятия, где пользователь ожидает одобрения заявки от организатора.
+     *
+     * @param userId - идентификатор пользователя
+     * @return список мероприятий DTO
+     */
     @Operation(
             summary = "Find user events with waiting feedback",
             responses = {
@@ -127,6 +176,12 @@ public class NotificationParticipantController {
         return notificationParticipantService.findUserEventsWithWaitingFeedback(userId);
     }
 
+    /**
+     * Выбирает всех участников одного мероприятия, включая организатора.
+     *
+     * @param eventId - идентификатор события
+     * @return список участников мероприятия DTO
+     */
     @Operation(
             summary = "Find event participants with approved feedback",
             responses = {
@@ -139,6 +194,12 @@ public class NotificationParticipantController {
         return notificationParticipantService.findEventParticipantsWithApprovedFeedback(eventId);
     }
 
+    /**
+     * Обновляет поле ownerViewed (просмотр заявки организатором).
+     *
+     * @param requestId - идентификатор заявки
+     * @param ownerViewed - флаг просмотра организатором
+     */
     @Operation(
             summary = "Update ownerViewed field",
             responses = {
@@ -151,6 +212,12 @@ public class NotificationParticipantController {
         notificationParticipantService.updateOwnerViewed(requestId, ownerViewed);
     }
 
+    /**
+     * Обновляет поле participantViewed (просмотр уведомления участником).
+     *
+     * @param requestId - идентификатор заявки
+     * @param participantViewed  флаг просмотра участником
+     */
     @Operation(
             summary = "Update participantViewed field",
             responses = {
@@ -163,6 +230,12 @@ public class NotificationParticipantController {
         notificationParticipantService.updateParticipantViewed(requestId, participantViewed);
     }
 
+    /**
+     * Проверяет существование заявки по идентификатору мероприятия и пользователя.
+     *
+     * @param notificationDTO уведомление DTO (заявка)
+     * @return ответ с булевым значением
+     */
     @Operation(
             summary = "Notification is exist by eventId and userId",
             responses = {
@@ -175,6 +248,13 @@ public class NotificationParticipantController {
         return ResponseEntity.ok(isExist);
     }
 
+    /**
+     * Находит заявку по идентификатору события и пользователя.
+     *
+     * @param eventId - идентификатор мероприятия
+     * @param userId - идентификатор пользователя
+     * @return заявка DTO
+     */
     @Operation(
             summary = "Find notification by eventId and userId",
             responses = {

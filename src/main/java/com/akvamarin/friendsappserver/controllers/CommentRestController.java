@@ -22,12 +22,26 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
+/**
+ * Контроллер по работе с комментариями пользователей, оставленных
+ * к мероприятиям, взаимодействует с CommentService.
+ *
+ * @see CommentService
+ * */
 @RestController
 @RequestMapping("/api/v1/comments")
 @RequiredArgsConstructor
 public class CommentRestController {
     private final CommentService commentService;
 
+    /**
+     * Создает новый комментарий.
+     *
+     * @param eventId - идентификатор мероприятия
+     * @param commentDTO - комментарий DTO
+     * @param currentUser - текущий пользователь
+     * @return ответ с информацией о созданном комментарии
+     */
     @Operation(
             summary = "Create new comment",
             responses = {
@@ -51,6 +65,12 @@ public class CommentRestController {
         return ResponseEntity.created(uri).build();
     }
 
+    /**
+     * Находит комментарий по его идентификатору.
+     *
+     * @param commentId - идентификатор комментария
+     * @return ответ с информацией о найденном комментарии
+     */
     @Operation(
             summary = "Find comment by ID",
             responses = {
@@ -64,6 +84,12 @@ public class CommentRestController {
         return ResponseEntity.ok(comment);
     }
 
+    /**
+     * Получает все комментарии для мероприятия.
+     *
+     * @param eventId - идентификатор мероприятия
+     * @return список комментариев для мероприятия
+     */
     @Operation(
             summary = "Get all comments for an event",
             responses = @ApiResponse(responseCode = "200", description = "All comments for the event", content = @Content(array = @ArraySchema(schema = @Schema(implementation = CommentDTO.class))))
@@ -73,6 +99,12 @@ public class CommentRestController {
         return commentService.getAllCommentsByEventId(eventId);
     }
 
+    /**
+     * Получает все комментарии пользователя.
+     *
+     * @param userId - идентификатор пользователя
+     * @return список комментариев пользователя
+     */
     @Operation(
             summary = "Get all comments for a user",
             responses = @ApiResponse(responseCode = "200", description = "All comments for the user", content = @Content(array = @ArraySchema(schema = @Schema(implementation = CommentDTO.class))))
@@ -83,6 +115,12 @@ public class CommentRestController {
         return ResponseEntity.ok(comments);
     }
 
+    /**
+     * Удаляет комментарий по его идентификатору.
+     *
+     * @param commentId - идентификатор комментария
+     * @return ответ без содержимого
+     */
     @Operation(
             summary = "Delete comment by ID",
             responses = {
@@ -96,6 +134,13 @@ public class CommentRestController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Обновляет существующий комментарий.
+     *
+     * @param commentId - идентификатор комментария
+     * @param commentDTO - комментарий DTO для обновления
+     * @return ответ обновленный комментарий
+     */
     @Operation(
             summary = "Update existing comment",
             responses = {

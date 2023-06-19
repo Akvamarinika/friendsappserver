@@ -3,9 +3,9 @@ package com.akvamarin.friendsappserver.controllers;
 import com.akvamarin.friendsappserver.domain.dto.error.ErrorResponse;
 import com.akvamarin.friendsappserver.domain.dto.error.ValidationErrorResponse;
 import com.akvamarin.friendsappserver.domain.dto.request.EventDTO;
+import com.akvamarin.friendsappserver.domain.dto.request.EventFilter;
 import com.akvamarin.friendsappserver.domain.dto.response.ViewEventDTO;
 import com.akvamarin.friendsappserver.domain.dto.response.ViewEventUpdateDTO;
-import com.akvamarin.friendsappserver.domain.dto.request.EventFilter;
 import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.domain.entity.event.Event;
 import com.akvamarin.friendsappserver.security.CurrentUser;
@@ -28,6 +28,12 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
+/**
+ * Контроллер для работы с мероприятиями,
+ * взаимодействует с EventService
+ *
+ * @see EventService
+ * */
 @RestController
 @RequestMapping("/api/v1/events")
 @RequiredArgsConstructor
@@ -36,6 +42,13 @@ public class EventRestController {
 
     private final EventService eventService;
 
+    /**
+     * Создает новое мероприятие.
+     *
+     * @param eventDTO - мероприятие DTO
+     * @param currentUser - текущий пользователь
+     * @return ответ с кодом состояния 201 (Created)
+     */
     @Operation(
             summary = "Create new event",
             responses = {
@@ -57,6 +70,11 @@ public class EventRestController {
         return ResponseEntity.created(uri).build();
     }
 
+    /**
+     * Возвращает список всех мероприятий.
+     *
+     * @return список мероприятий DTO
+     */
     @Operation(
             summary = "Get all events",
             responses = @ApiResponse(responseCode = "200",
@@ -68,6 +86,12 @@ public class EventRestController {
         return eventService.findAll();
     }
 
+    /**
+     * Находит мероприятие по его идентификатору.
+     *
+     * @param id - идентификатор мероприятия
+     * @return мероприятие DTO
+     */
     @Operation(
             summary = "Find event by ID",
             responses = {
@@ -80,6 +104,12 @@ public class EventRestController {
         return eventService.findById(id);
     }
 
+    /**
+     * Находит мероприятие по его идентификатору вместе со всеми категориями.
+     *
+     * @param id - идентификатор мероприятия
+     * @return мероприятие DTO с категориями
+     */
     @Operation(
             summary = "Find event by ID, with all categories",
             responses = {
@@ -92,6 +122,12 @@ public class EventRestController {
         return eventService.findByIdForViewUpdate(id);
     }
 
+    /**
+     * Обновляет существующее мероприятие.
+     *
+     * @param dto   мероприятие DTO для обновления
+     * @return обновленное мероприятие DTO
+     */
     @Operation(
             summary = "Update existing event",
             responses = {
@@ -105,6 +141,11 @@ public class EventRestController {
         return eventService.updateEvent(dto);
     }
 
+    /**
+     * Удаляет мероприятие по его идентификатору.
+     *
+     * @param id - идентификатор мероприятия
+     */
     @Operation(
             summary = "Remove event by ID",
             responses = @ApiResponse(responseCode = "204", description = "Event for requested ID is removed")
@@ -115,6 +156,12 @@ public class EventRestController {
         eventService.deleteById(id);
     }
 
+    /**
+     * Фильтрует мероприятия в соответствии с заданными параметрами фильтра.
+     *
+     * @param eventFilter - фильтр мероприятий
+     * @return список отфильтрованных мероприятий DTO
+     */
     @Operation(
             summary = "Filter events",
             responses = @ApiResponse(responseCode = "200",
@@ -126,6 +173,5 @@ public class EventRestController {
         log.info("Method *** filterEvents *** : eventFilter = {} ", eventFilter);
         return eventService.filterEvents(eventFilter);
     }
-
 }
 

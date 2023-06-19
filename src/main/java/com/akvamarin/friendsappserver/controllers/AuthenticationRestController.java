@@ -27,6 +27,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 
+/**
+ * Контроллер для регистрации, авторизации
+ * и аутентификации пользователей
+ * взаимодействует с сервисом authenticationUserService.
+ *
+ * @see AuthenticationUserService
+ * */
 @Slf4j
 @RestController
 @RequestMapping("api/v1/auth")
@@ -35,6 +42,12 @@ public class AuthenticationRestController {
 
     private final AuthenticationUserService authenticationUserService;
 
+    /**
+     * Осуществление входа пользователя в приложение.
+     *
+     * @param paramDTO - параметры пользователя, необходимые для входа (login, pass)
+     * @return токен
+     */
     @Operation(
             summary = "Sign in user",
             responses = {
@@ -55,6 +68,12 @@ public class AuthenticationRestController {
         }
     }
 
+    /**
+     * Вход пользователя с использованием профиля социальной сети "ВКонтакте" (OAuth2).
+     *
+     * @param userSocialDTO - пользователь с информацией полученной из социальной сети
+     * @return токен сервера авторизации
+     */
     @Operation(
             summary = "Sign in user with Auth2",
             responses = {
@@ -77,6 +96,13 @@ public class AuthenticationRestController {
         }
     }
 
+    /**
+     * Регистрация нового пользователя.
+     *
+     * @param userDTO - данные пользователя, полученные при заполнении регистрационной формы
+     *
+     * @return ответ с созданным пользователем
+     */
     @Operation(
             summary = "Register new user",
             responses = {
@@ -97,5 +123,4 @@ public class AuthenticationRestController {
 
         return ResponseEntity.created(uri).build();
     }
-
 }

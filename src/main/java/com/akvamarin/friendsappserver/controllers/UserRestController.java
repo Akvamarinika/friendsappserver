@@ -1,12 +1,12 @@
 package com.akvamarin.friendsappserver.controllers;
 
-import com.akvamarin.friendsappserver.domain.dto.response.ViewUserDTO;
-import com.akvamarin.friendsappserver.domain.dto.response.ViewUserSlimDTO;
-import com.akvamarin.friendsappserver.services.UserService;
-import com.akvamarin.friendsappserver.domain.dto.request.UserDTO;
-import com.akvamarin.friendsappserver.domain.entity.User;
 import com.akvamarin.friendsappserver.domain.dto.error.ErrorResponse;
 import com.akvamarin.friendsappserver.domain.dto.error.ValidationErrorResponse;
+import com.akvamarin.friendsappserver.domain.dto.request.UserDTO;
+import com.akvamarin.friendsappserver.domain.dto.response.ViewUserDTO;
+import com.akvamarin.friendsappserver.domain.dto.response.ViewUserSlimDTO;
+import com.akvamarin.friendsappserver.domain.entity.User;
+import com.akvamarin.friendsappserver.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -18,12 +18,18 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
-//@RequestBody в теле запроса отправляет клиент
 
-
+/**
+ * Контроллер для работы с
+ * пользовательскими данными, взаимодействует с UserService
+ *
+ * @see UserService
+ * */
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
@@ -31,6 +37,12 @@ public class UserRestController {
 
     private final UserService userService;
 
+    /**
+     * Создает нового пользователя.
+     *
+     * @param userDTO - пользователь DTO
+     * @return ответ с кодом состояния 201 (Created)
+     */
     @Operation(
             summary = "Create new user",
             responses = {
@@ -51,6 +63,12 @@ public class UserRestController {
         return ResponseEntity.created(uri).build();
     }
 
+    /**
+     * Возвращает список всех пользователей с основными данными
+     * для отобрания на интерфейсе (UI).
+     *
+     * @return список пользователей DTO с основной информацией
+     */
     @Operation(
             summary = "Get all slim users",
             responses = @ApiResponse(responseCode = "200",
@@ -62,6 +80,13 @@ public class UserRestController {
         return userService.findAll();
     }
 
+    /**
+     * Возвращает пользователя по его идентификатору.
+     *
+     * @param id - идентификатор пользователя
+     * @return пользователя DTO с основной информацией
+     * @throws EntityNotFoundException если пользователь не найден
+     */
     @Operation(
             summary = "Find user by ID",
             responses = {
@@ -74,6 +99,13 @@ public class UserRestController {
         return userService.findById(id);
     }
 
+    /**
+     * Возвращает пользователя по его логину.
+     *
+     * @param login - логин пользователя
+     * @return пользователь DTO
+     * @throws EntityNotFoundException, если пользователь не найден
+     */
     @Operation(
             summary = "Get user by login",
             responses = {
@@ -86,6 +118,13 @@ public class UserRestController {
         return userService.findByLogin(login);
     }
 
+    /**
+     * Возвращает основные данные пользователя по его логину.
+     *
+     * @param login - логин пользователя
+     * @return пользователь DTO с основной информацией
+     * @throws EntityNotFoundException, если пользователь не найден
+     */
     @Operation(
             summary = "Get slim user by login",
             responses = {
@@ -98,6 +137,12 @@ public class UserRestController {
         return userService.findSlimUserByLogin(login);
     }
 
+    /**
+     * Обновляет существующего пользователя.
+     *
+     * @param dto - пользователь DTO для обновления
+     * @throws EntityNotFoundException, если запрашиваемые данные не найдены
+     */
     @Operation(
             summary = "Update existing user",
             responses = {
@@ -111,7 +156,11 @@ public class UserRestController {
         userService.updateUser(dto);
     }
 
-
+    /**
+     * Удаляет пользователя по его идентификатору.
+     *
+     * @param id - идентификатор пользователя
+     */
     @Operation(
             summary = "Remove user by ID",
             responses = @ApiResponse(responseCode = "204", description = "User for requested ID is removed")
@@ -122,7 +171,12 @@ public class UserRestController {
         userService.deleteById(id);
     }
 
-
+    /**
+     * Проверяет, занят ли указанный логин.
+     *
+     * @param username - логин для проверки
+     * @return ответ с кодом состояния 200 (OK) и флагом, указывающим, занят ли логин
+     */
     @Operation(
             summary = "Username is taken",
             responses = {
@@ -134,5 +188,4 @@ public class UserRestController {
         boolean isTaken = userService.isUsernameAlreadyTaken(username);
         return ResponseEntity.ok(isTaken);
     }
-
 }
