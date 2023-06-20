@@ -8,6 +8,7 @@
 - Spring Web
 - Spring Security (JWT)
 - Swagger (OpenAPI 3.0)
+- ORM Hibernate
 - Postgresql
 - MapStruct
 - Lombok
